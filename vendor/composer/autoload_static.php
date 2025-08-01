@@ -13,7 +13,6 @@ class ComposerStaticInitdae2448ce990692cd913673b9073b583
     public static $prefixLengthsPsr4 = array (
         'W' => 
         array (
-            'Webmozart\\Assert\\' => 17,
             'Webimpress\\SafeWriter\\' => 22,
         ),
         'P' => 
@@ -35,12 +34,10 @@ class ComposerStaticInitdae2448ce990692cd913673b9073b583
             'Laminas\\ModuleManager\\' => 22,
             'Laminas\\Loader\\' => 15,
             'Laminas\\Json\\' => 13,
-            'Laminas\\Hydrator\\' => 17,
             'Laminas\\Http\\' => 13,
             'Laminas\\EventManager\\' => 21,
             'Laminas\\Escaper\\' => 16,
             'Laminas\\DevelopmentMode\\' => 24,
-            'Laminas\\Db\\' => 11,
             'Laminas\\Config\\' => 15,
             'Laminas\\ComponentInstaller\\' => 27,
         ),
@@ -56,10 +53,6 @@ class ComposerStaticInitdae2448ce990692cd913673b9073b583
     );
 
     public static $prefixDirsPsr4 = array (
-        'Webmozart\\Assert\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/webmozart/assert/src',
-        ),
         'Webimpress\\SafeWriter\\' => 
         array (
             0 => __DIR__ . '/..' . '/webimpress/safe-writer/src',
@@ -120,10 +113,6 @@ class ComposerStaticInitdae2448ce990692cd913673b9073b583
         array (
             0 => __DIR__ . '/..' . '/laminas/laminas-json/src',
         ),
-        'Laminas\\Hydrator\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/laminas/laminas-hydrator/src',
-        ),
         'Laminas\\Http\\' => 
         array (
             0 => __DIR__ . '/..' . '/laminas/laminas-http/src',
@@ -139,10 +128,6 @@ class ComposerStaticInitdae2448ce990692cd913673b9073b583
         'Laminas\\DevelopmentMode\\' => 
         array (
             0 => __DIR__ . '/..' . '/laminas/laminas-development-mode/src',
-        ),
-        'Laminas\\Db\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/laminas/laminas-db/src',
         ),
         'Laminas\\Config\\' => 
         array (

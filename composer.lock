@@ -1,9 +1,14 @@
 {
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "264a9f594f5551c236be91c084d3fd18",
     "packages": [
         {
             "name": "brick/varexporter",
             "version": "0.3.8",
-            "version_normalized": "0.3.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/brick/varexporter.git",
@@ -24,9 +29,7 @@
                 "phpunit/phpunit": "^8.5 || ^9.0",
                 "vimeo/psalm": "4.23.0"
             },
-            "time": "2023-01-21T23:05:38+00:00",
             "type": "library",
-            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "Brick\\VarExporter\\": "src/"
@@ -50,12 +53,11 @@
                     "type": "github"
                 }
             ],
-            "install-path": "../brick/varexporter"
+            "time": "2023-01-21T23:05:38+00:00"
         },
         {
             "name": "laminas/laminas-component-installer",
             "version": "3.3.0",
-            "version_normalized": "3.3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-component-installer.git",
@@ -83,12 +85,10 @@
                 "vimeo/psalm": "^5.0.0",
                 "webmozart/assert": "^1.11.0"
             },
-            "time": "2023-07-17T06:52:58+00:00",
             "type": "composer-plugin",
             "extra": {
                 "class": "Laminas\\ComponentInstaller\\ComponentInstaller"
             },
-            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "Laminas\\ComponentInstaller\\": "src/"
@@ -120,12 +120,11 @@
                     "type": "community_bridge"
                 }
             ],
-            "install-path": "../laminas/laminas-component-installer"
+            "time": "2023-07-17T06:52:58+00:00"
         },
         {
             "name": "laminas/laminas-config",
             "version": "3.9.0",
-            "version_normalized": "3.9.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-config.git",
@@ -159,9 +158,7 @@
                 "laminas/laminas-i18n": "^2.7.4; install if you want to use the Translator processor",
                 "laminas/laminas-servicemanager": "^2.7.8 || ^3.3; if you need an extensible plugin manager for use with the Config Factory"
             },
-            "time": "2023-09-19T12:02:54+00:00",
             "type": "library",
-            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "Laminas\\Config\\": "src/"
@@ -192,12 +189,11 @@
                 }
             ],
             "abandoned": true,
-            "install-path": "../laminas/laminas-config"
+            "time": "2023-09-19T12:02:54+00:00"
         },
         {
             "name": "laminas/laminas-development-mode",
             "version": "3.10.0",
-            "version_normalized": "3.10.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-development-mode.git",
@@ -222,12 +218,10 @@
                 "psalm/plugin-phpunit": "^0.17.0",
                 "vimeo/psalm": "^4.29"
             },
-            "time": "2022-10-22T12:11:18+00:00",
             "bin": [
                 "bin/laminas-development-mode"
             ],
             "type": "library",
-            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "Laminas\\DevelopmentMode\\": "src/"
@@ -256,12 +250,11 @@
                     "type": "community_bridge"
                 }
             ],
-            "install-path": "../laminas/laminas-development-mode"
+            "time": "2022-10-22T12:11:18+00:00"
         },
         {
             "name": "laminas/laminas-escaper",
             "version": "2.12.0",
-            "version_normalized": "2.12.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-escaper.git",
@@ -289,9 +282,7 @@
                 "psalm/plugin-phpunit": "^0.17.0",
                 "vimeo/psalm": "^4.22.0"
             },
-            "time": "2022-10-10T10:11:09+00:00",
             "type": "library",
-            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "Laminas\\Escaper\\": "src/"
@@ -321,12 +312,11 @@
                     "type": "community_bridge"
                 }
             ],
-            "install-path": "../laminas/laminas-escaper"
+            "time": "2022-10-10T10:11:09+00:00"
         },
         {
             "name": "laminas/laminas-eventmanager",
             "version": "3.11.0",
-            "version_normalized": "3.11.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-eventmanager.git",
@@ -358,9 +348,7 @@
                 "laminas/laminas-stdlib": "^2.7.3 || ^3.0, to use the FilterChain feature",
                 "psr/container": "^1.1.2 || ^2.0.2, to use the lazy listeners feature"
             },
-            "time": "2023-10-10T08:29:58+00:00",
             "type": "library",
-            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "Laminas\\EventManager\\": "src/"
@@ -392,12 +380,11 @@
                     "type": "community_bridge"
                 }
             ],
-            "install-path": "../laminas/laminas-eventmanager"
+            "time": "2023-10-10T08:29:58+00:00"
         },
         {
             "name": "laminas/laminas-http",
             "version": "2.18.0",
-            "version_normalized": "2.18.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-http.git",
@@ -427,9 +414,7 @@
             "suggest": {
                 "paragonie/certainty": "For automated management of cacert.pem"
             },
-            "time": "2022-11-23T15:45:41+00:00",
             "type": "library",
-            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "Laminas\\Http\\": "src/"
@@ -460,12 +445,11 @@
                     "type": "community_bridge"
                 }
             ],
-            "install-path": "../laminas/laminas-http"
+            "time": "2022-11-23T15:45:41+00:00"
         },
         {
             "name": "laminas/laminas-json",
             "version": "3.5.0",
-            "version_normalized": "3.5.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-json.git",
@@ -492,9 +476,7 @@
                 "laminas/laminas-json-server": "For implementing JSON-RPC servers",
                 "laminas/laminas-xml2json": "For converting XML documents to JSON"
             },
-            "time": "2022-10-17T04:06:45+00:00",
             "type": "library",
-            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "Laminas\\Json\\": "src/"
@@ -525,12 +507,11 @@
                 }
             ],
             "abandoned": true,
-            "install-path": "../laminas/laminas-json"
+            "time": "2022-10-17T04:06:45+00:00"
         },
         {
             "name": "laminas/laminas-loader",
             "version": "2.11.1",
-            "version_normalized": "2.11.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-loader.git",
@@ -552,9 +533,7 @@
                 "laminas/laminas-coding-standard": "~2.4.0",
                 "phpunit/phpunit": "~9.5.25"
             },
-            "time": "2024-12-05T14:43:32+00:00",
             "type": "library",
-            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "Laminas\\Loader\\": "src/"
@@ -585,12 +564,11 @@
                 }
             ],
             "abandoned": true,
-            "install-path": "../laminas/laminas-loader"
+            "time": "2024-12-05T14:43:32+00:00"
         },
         {
             "name": "laminas/laminas-modulemanager",
             "version": "2.14.0",
-            "version_normalized": "2.14.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-modulemanager.git",
@@ -628,9 +606,7 @@
                 "laminas/laminas-mvc": "Laminas\\Mvc component",
                 "laminas/laminas-servicemanager": "Laminas\\ServiceManager component"
             },
-            "time": "2022-10-28T09:21:04+00:00",
             "type": "library",
-            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "Laminas\\ModuleManager\\": "src/"
@@ -660,12 +636,11 @@
                     "type": "community_bridge"
                 }
             ],
-            "install-path": "../laminas/laminas-modulemanager"
+            "time": "2022-10-28T09:21:04+00:00"
         },
         {
             "name": "laminas/laminas-mvc",
             "version": "3.3.5",
-            "version_normalized": "3.3.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-mvc.git",
@@ -713,9 +688,7 @@
                 "laminas/laminas-paginator": "^2.7 To provide pagination functionality via PaginatorPluginManager",
                 "laminas/laminas-servicemanager-di": "laminas-servicemanager-di provides utilities for integrating laminas-di and laminas-servicemanager in your laminas-mvc application"
             },
-            "time": "2022-09-20T12:37:51+00:00",
             "type": "library",
-            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "Laminas\\Mvc\\": "src/"
@@ -745,12 +718,11 @@
                     "type": "community_bridge"
                 }
             ],
-            "install-path": "../laminas/laminas-mvc"
+            "time": "2022-09-20T12:37:51+00:00"
         },
         {
             "name": "laminas/laminas-router",
             "version": "3.11.1",
-            "version_normalized": "3.11.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-router.git",
@@ -781,7 +753,6 @@
             "suggest": {
                 "laminas/laminas-i18n": "^2.15.0 if defining translatable HTTP path segments"
             },
-            "time": "2022-12-29T14:47:23+00:00",
             "type": "library",
             "extra": {
                 "laminas": {
@@ -789,7 +760,6 @@
                     "config-provider": "Laminas\\Router\\ConfigProvider"
                 }
             },
-            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "Laminas\\Router\\": "src/"
@@ -819,12 +789,11 @@
                     "type": "community_bridge"
                 }
             ],
-            "install-path": "../laminas/laminas-router"
+            "time": "2022-12-29T14:47:23+00:00"
         },
         {
             "name": "laminas/laminas-servicemanager",
             "version": "3.20.0",
-            "version_normalized": "3.20.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-servicemanager.git",
@@ -868,13 +837,11 @@
             "suggest": {
                 "ocramius/proxy-manager": "ProxyManager ^2.1.1 to handle lazy initialization of services"
             },
-            "time": "2022-12-01T17:03:38+00:00",
             "bin": [
                 "bin/generate-deps-for-config-factory",
                 "bin/generate-factory-for-class"
             ],
             "type": "library",
-            "installation-source": "dist",
             "autoload": {
                 "files": [
                     "src/autoload.php"
@@ -912,12 +879,11 @@
                     "type": "community_bridge"
                 }
             ],
-            "install-path": "../laminas/laminas-servicemanager"
+            "time": "2022-12-01T17:03:38+00:00"
         },
         {
             "name": "laminas/laminas-skeleton-installer",
             "version": "1.2.0",
-            "version_normalized": "1.2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-skeleton-installer.git",
@@ -946,12 +912,10 @@
                 "psalm/plugin-phpunit": "^0.18.0",
                 "vimeo/psalm": "^5.0.0"
             },
-            "time": "2022-12-21T08:22:47+00:00",
             "type": "composer-plugin",
             "extra": {
                 "class": "Laminas\\SkeletonInstaller\\Plugin"
             },
-            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "Laminas\\SkeletonInstaller\\": "src/"
@@ -981,12 +945,11 @@
                     "type": "community_bridge"
                 }
             ],
-            "install-path": "../laminas/laminas-skeleton-installer"
+            "time": "2022-12-21T08:22:47+00:00"
         },
         {
             "name": "laminas/laminas-stdlib",
             "version": "3.16.1",
-            "version_normalized": "3.16.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-stdlib.git",
@@ -1011,9 +974,7 @@
                 "psalm/plugin-phpunit": "^0.18.0",
                 "vimeo/psalm": "^5.0.0"
             },
-            "time": "2022-12-03T18:48:01+00:00",
             "type": "library",
-            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "Laminas\\Stdlib\\": "src/"
@@ -1043,12 +1004,11 @@
                     "type": "community_bridge"
                 }
             ],
-            "install-path": "../laminas/laminas-stdlib"
+            "time": "2022-12-03T18:48:01+00:00"
         },
         {
             "name": "laminas/laminas-uri",
             "version": "2.10.0",
-            "version_normalized": "2.10.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-uri.git",
@@ -1072,9 +1032,7 @@
                 "laminas/laminas-coding-standard": "~2.4.0",
                 "phpunit/phpunit": "^9.5.25"
             },
-            "time": "2022-10-16T15:02:45+00:00",
             "type": "library",
-            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "Laminas\\Uri\\": "src/"
@@ -1104,12 +1062,11 @@
                     "type": "community_bridge"
                 }
             ],
-            "install-path": "../laminas/laminas-uri"
+            "time": "2022-10-16T15:02:45+00:00"
         },
         {
             "name": "laminas/laminas-validator",
             "version": "2.30.1",
-            "version_normalized": "2.30.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-validator.git",
@@ -1154,7 +1111,6 @@
                 "laminas/laminas-uri": "Laminas\\Uri component, required by the Uri and Sitemap\\Loc validators",
                 "psr/http-message": "psr/http-message, required when validating PSR-7 UploadedFileInterface instances via the Upload and UploadFile validators"
             },
-            "time": "2023-01-30T22:41:19+00:00",
             "type": "library",
             "extra": {
                 "laminas": {
@@ -1162,7 +1118,6 @@
                     "config-provider": "Laminas\\Validator\\ConfigProvider"
                 }
             },
-            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "Laminas\\Validator\\": "src/"
@@ -1192,12 +1147,11 @@
                     "type": "community_bridge"
                 }
             ],
-            "install-path": "../laminas/laminas-validator"
+            "time": "2023-01-30T22:41:19+00:00"
         },
         {
             "name": "laminas/laminas-view",
             "version": "2.27.0",
-            "version_normalized": "2.27.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-view.git",
@@ -1260,12 +1214,10 @@
                 "laminas/laminas-permissions-acl": "Laminas\\Permissions\\Acl component",
                 "laminas/laminas-uri": "Laminas\\Uri component"
             },
-            "time": "2023-02-09T16:07:15+00:00",
             "bin": [
                 "bin/templatemap_generator.php"
             ],
             "type": "library",
-            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "Laminas\\View\\": "src/"
@@ -1295,12 +1247,11 @@
                     "type": "community_bridge"
                 }
             ],
-            "install-path": "../laminas/laminas-view"
+            "time": "2023-02-09T16:07:15+00:00"
         },
         {
             "name": "nikic/php-parser",
             "version": "v4.19.4",
-            "version_normalized": "4.19.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikic/PHP-Parser.git",
@@ -1320,7 +1271,6 @@
                 "ircmaxell/php-yacc": "^0.0.7",
                 "phpunit/phpunit": "^7.0 || ^8.0 || ^9.0"
             },
-            "time": "2024-09-29T15:01:53+00:00",
             "bin": [
                 "bin/php-parse"
             ],
@@ -1330,7 +1280,6 @@
                     "dev-master": "4.9-dev"
                 }
             },
-            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "PhpParser\\": "lib/PhpParser"
@@ -1354,12 +1303,11 @@
                 "issues": "https://github.com/nikic/PHP-Parser/issues",
                 "source": "https://github.com/nikic/PHP-Parser/tree/v4.19.4"
             },
-            "install-path": "../nikic/php-parser"
+            "time": "2024-09-29T15:01:53+00:00"
         },
         {
             "name": "psr/container",
             "version": "1.1.2",
-            "version_normalized": "1.1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/container.git",
@@ -1374,9 +1322,7 @@
             "require": {
                 "php": ">=7.4.0"
             },
-            "time": "2021-11-05T16:50:12+00:00",
             "type": "library",
-            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "Psr\\Container\\": "src/"
@@ -1405,12 +1351,11 @@
                 "issues": "https://github.com/php-fig/container/issues",
                 "source": "https://github.com/php-fig/container/tree/1.1.2"
             },
-            "install-path": "../psr/container"
+            "time": "2021-11-05T16:50:12+00:00"
         },
         {
             "name": "psr/http-message",
             "version": "1.1",
-            "version_normalized": "1.1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/http-message.git",
@@ -1425,14 +1370,12 @@
             "require": {
                 "php": "^7.2 || ^8.0"
             },
-            "time": "2023-04-04T09:50:52+00:00",
             "type": "library",
             "extra": {
                 "branch-alias": {
                     "dev-master": "1.1.x-dev"
                 }
             },
-            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "Psr\\Http\\Message\\": "src/"
@@ -1461,12 +1404,11 @@
             "support": {
                 "source": "https://github.com/php-fig/http-message/tree/1.1"
             },
-            "install-path": "../psr/http-message"
+            "time": "2023-04-04T09:50:52+00:00"
         },
         {
             "name": "webimpress/safe-writer",
             "version": "2.2.0",
-            "version_normalized": "2.2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webimpress/safe-writer.git",
@@ -1486,7 +1428,6 @@
                 "vimeo/psalm": "^4.7",
                 "webimpress/coding-standard": "^1.2.2"
             },
-            "time": "2021-04-19T16:34:45+00:00",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -1495,7 +1436,6 @@
                     "dev-release-1.0": "1.0.x-dev"
                 }
             },
-            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "Webimpress\\SafeWriter\\": "src/"
@@ -1523,9 +1463,18 @@
                     "type": "github"
                 }
             ],
-            "install-path": "../webimpress/safe-writer"
+            "time": "2021-04-19T16:34:45+00:00"
         }
     ],
-    "dev": true,
-    "dev-package-names": []
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": {},
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": {
+        "php": "~8.0.0 || ~8.1.0 || ~8.2.0"
+    },
+    "platform-dev": {},
+    "plugin-api-version": "2.6.0"
 }
