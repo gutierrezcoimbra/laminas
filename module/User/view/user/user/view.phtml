@@ -1,0 +1,9 @@
+<h1>Vista de Usuario</h1>
+<p>ID: <?= $user->getId() ?></p>
+<p>Nombre: <?= $user->getNombreCompleto() ?></p>
+<p>Email: <?= $user->getEmail() ?></p>
+<p>Fecha de Nacimiento: <?= $user->getFechaNacimiento()->format('d/m/Y') ?></p>
+<p>Edad: <?= $user->getEdad() ?></p>
+<p>Estado: <?= $user->isDeleted() ? 'Eliminado' : 'Activo' ?></p>
+
+<a href="/user">Volver a la lista de usuarios</a>   

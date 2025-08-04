@@ -14,11 +14,20 @@
         "laminas/laminas-component-installer": "^3.2",
         "laminas/laminas-development-mode": "^3.10",
         "laminas/laminas-skeleton-installer": "^1.2",
-        "laminas/laminas-mvc": "3.3.5"
+        "laminas/laminas-mvc": "^3.6.0",
+        "laminas/laminas-db": "^2.18",
+        "laminas/laminas-mvc-plugin-flashmessenger": "^1.9",
+        "laminas/laminas-form": "^3.9",
+        "laminas/laminas-hydrator": "^4.13",
+        "laminas/laminas-inputfilter": "^2.24",
+        "laminas/laminas-filter": "^2.31",
+        "laminas/laminas-cli": "^1.8",
+        "laminas/laminas-i18n": "^2.22"
     },
     "autoload": {
         "psr-4": {
-            "Application\\": "module/Application/src/"
+            "Application\\": "module/Application/src/",
+            "User\\": "module/User/src/" 
         }
     },
     "autoload-dev": {

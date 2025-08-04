@@ -1,0 +1,16 @@
+<?php
+/**
+ * Partial para renderizar los botones de acción del formulario
+ * @var \Laminas\Form\Element $submitButton Botón de envío
+ * @var string $cancelUrl URL para cancelar
+ * @var string $backUrl URL para volver atrás
+ */
+?>
+
+<div class="row mb-3">
+    <div class="col-sm-10 offset-sm-2">
+        <?= $this->formElement($submitButton); ?>
+        <a href="<?= $cancelUrl ?>" class="btn btn-secondary">Cancelar</a>
+        <a href="<?= $backUrl ?>" class="btn btn-link">Volver a la lista</a>
+    </div>
+</div> 

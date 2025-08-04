@@ -1,0 +1,43 @@
+<?php
+$title = 'Eliminar Usuario';
+$this->headTitle($title);
+?>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <div class="card">
+                <div class="card-header">
+                    <h2><?= $this->escapeHtml($title) ?></h2>
+                </div>
+                <div class="card-body">
+                    <?= $this->partial('user/partials/flash-messages'); ?>
+
+                    <h3>¿Está seguro de que desea eliminar este usuario?</h3>
+                    
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title"><?= $this->escapeHtml($this->user->getNombreCompleto()) ?></h5>
+                            <p class="card-text">
+                                <strong>Email:</strong> <?= $this->escapeHtml($this->user->getEmail()) ?><br>
+                                <strong>Fecha de Nacimiento:</strong> 
+                                <?= $this->user->getFechaNacimiento() ? $this->user->getFechaNacimiento()->format('d/m/Y') : 'No especificada' ?><br>
+                                <strong>Edad:</strong> 
+                                <?= $this->user->getEdad() ? $this->user->getEdad() . ' años' : 'No calculable' ?>
+                            </p>
+                        </div>
+                    </div>
+
+                    <form action="<?= $this->url('user/delete', ['id' => $this->id]) ?>" method="post">
+                        <div class="form-group">
+                            <input type="hidden" name="id" value="<?= $this->id ?>" />
+                            <input type="submit" name="del" value="Sí" class="btn btn-danger" />
+                            <input type="submit" name="del" value="No" class="btn btn-secondary" />
+                            <a href="<?= $this->url('user') ?>" class="btn btn-link">Cancelar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

@@ -1,0 +1,27 @@
+<?php
+/**
+ * Partial para renderizar todos los campos del formulario de usuario
+ * @var \Laminas\Form\Form $form Formulario completo
+ * @var array $errors Errores del formulario
+ */
+?>
+
+<?= $this->partial('user/partials/form-input', [
+    'element' => $form->get('nombre'),
+    'errors' => $errors ?? []
+]); ?>
+
+<?= $this->partial('user/partials/form-input', [
+    'element' => $form->get('apellidos'),
+    'errors' => $errors ?? []
+]); ?>
+
+<?= $this->partial('user/partials/form-input', [
+    'element' => $form->get('email'),
+    'errors' => $errors ?? []
+]); ?>
+
+<?= $this->partial('user/partials/form-input', [
+    'element' => $form->get('fechaNacimiento'),
+    'errors' => $errors ?? []
+]); ?> 

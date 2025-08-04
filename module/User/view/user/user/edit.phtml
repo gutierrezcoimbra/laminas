@@ -1,0 +1,11 @@
+<?php
+$title = 'Editar Usuario';
+$this->headTitle($title);
+?>
+
+<?= $this->partial('user/partials/user-form', [
+    'title' => $title,
+    'form' => $this->form,
+    'errors' => $this->errors ?? [],
+    'actionUrl' => $this->url('user/edit', ['id' => $this->id])
+]); ?> 

@@ -1,0 +1,44 @@
+<?php
+/**
+ * Partial completo para el formulario de usuario
+ * @var string $title Título del formulario
+ * @var \Laminas\Form\Form $form Formulario completo
+ * @var array $errors Errores del formulario
+ * @var string $actionUrl URL de acción del formulario
+ */
+?>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <h2><?= $this->escapeHtml($title) ?></h2>
+                </div>
+                <div class="card-body">
+                    <?= $this->partial('user/partials/flash-messages'); ?>
+
+                    <?php
+                    $form->setAttribute('action', $actionUrl);
+                    $form->prepare();
+                    ?>
+
+                    <?= $this->form()->openTag($form); ?>
+                    
+                    <?= $this->partial('user/partials/form-fields', [
+                        'form' => $form,
+                        'errors' => $errors ?? []
+                    ]); ?>
+
+                    <?= $this->partial('user/partials/form-actions', [
+                        'submitButton' => $form->get('submit'),
+                        'cancelUrl' => $this->url('user'),
+                        'backUrl' => $this->url('user')
+                    ]); ?>
+
+                    <?= $this->form()->closeTag(); ?>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 
