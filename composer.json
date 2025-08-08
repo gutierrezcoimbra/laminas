@@ -1,28 +1,36 @@
 {
     "name": "laminas/laminas-mvc-skeleton",
-    "description": "Laminas MVC Skeleton Application",
+    "description": "Laminas MVC Skeleton Application with ZfcDatagrid",
     "type": "project",
     "license": "BSD-3-Clause",
     "keywords": [
         "laminas",
         "mvc",
         "skeleton",
-        "framework"
+        "framework",
+        "datagrid"
     ],
     "require": {
-        "php": "~8.0.0 || ~8.1.0 || ~8.2.0",
-        "laminas/laminas-component-installer": "^3.2",
-        "laminas/laminas-development-mode": "^3.10",
-        "laminas/laminas-skeleton-installer": "^1.2",
-        "laminas/laminas-mvc": "^3.6.0",
-        "laminas/laminas-db": "^2.18",
-        "laminas/laminas-mvc-plugin-flashmessenger": "^1.9",
-        "laminas/laminas-form": "^3.9",
-        "laminas/laminas-hydrator": "^4.13",
-        "laminas/laminas-inputfilter": "^2.24",
-        "laminas/laminas-filter": "^2.31",
-        "laminas/laminas-cli": "^1.8",
-        "laminas/laminas-i18n": "^2.22"
+        "php": "^7.3 || ^8.0",
+        "laminas/laminas-development-mode": "3.3.0",
+        "laminas/laminas-skeleton-installer": "1.0.0",
+        "laminas/laminas-mvc": "3.1.1",
+        "laminas/laminas-db": "2.8.2",
+        "laminas/laminas-mvc-plugin-flashmessenger": "1.5.0",
+        "laminas/laminas-form": "^2.17",
+        "laminas/laminas-hydrator": "^3.2",
+        "laminas/laminas-inputfilter": "2.10.1",
+        "laminas/laminas-filter": "2.9.2",
+        "laminas/laminas-cli": "1.0.0",
+        "laminas/laminas-i18n": "2.10.3",
+        "laminas/laminas-cache": "2.9.0",
+        "laminas/laminas-http": "2.8.4",
+        "laminas/laminas-paginator": "2.8.2",
+        "laminas/laminas-servicemanager": "3.4.1",
+        "laminas/laminas-session": "2.9.1",
+        "laminas/laminas-view": "2.12.0",
+        "doctrine/doctrine-laminas-hydrator": "^2.0",
+        "zfc-datagrid/zfc-datagrid": "2.1.0"
     },
     "autoload": {
         "psr-4": {
@@ -69,8 +77,11 @@
     },
     "config": {
         "allow-plugins": {
-            "laminas/laminas-component-installer": true,
-            "laminas/laminas-skeleton-installer": true
+            "laminas/laminas-skeleton-installer": true,
+            "laminas/laminas-component-installer": false
+        },
+        "platform": {
+            "php": "7.4.0"
         }
     }
 }

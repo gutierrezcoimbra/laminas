@@ -16,6 +16,7 @@ return [
     'Laminas\Db',
     'Laminas\Router',
     'Laminas\Validator',
+    'ZfcDatagrid',
     'Application',
     'User',
 ];

@@ -63,3 +63,4 @@ class Skill
     public function setNombre(string $nombre): void { $this->nombre = $nombre; }
     public function setDeletedAt(int $deletedAt): void { $this->deletedAt = $deletedAt; }
 }
+

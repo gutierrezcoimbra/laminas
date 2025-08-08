@@ -248,10 +248,14 @@ return [
                 $cvTable = $container->get(\User\Model\CvTable::class);
                 return new View\Helper\ViewCVHelper($cvTable);
             },
+            View\Helper\SafeEscapeHtml::class => function($container) {
+                return new View\Helper\SafeEscapeHtml();
+            },
         ],
         'aliases' => [
             'flashMessages' => View\Helper\FlashMessages::class,
             'viewCVHelper' => View\Helper\ViewCVHelper::class,
+            'safeEscapeHtml' => View\Helper\SafeEscapeHtml::class,
         ],
     ],
 ];

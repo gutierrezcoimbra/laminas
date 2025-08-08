@@ -89,6 +89,53 @@ class CvTable
         return $row;
     }
 
+    public function getCvWithSkills($id, $includeDeleted = false)
+    {
+        $id = (int) $id;
+        $adapter = $this->tableGateway->getAdapter();
+        
+        $deletedCondition = $includeDeleted ? '' : 'AND cvs.deletedAt = 0';
+        
+        $sql = "SELECT cvs.*, 
+                GROUP_CONCAT(
+                    CONCAT(skills.nombre, ':', skill_cv.nivel) 
+                    ORDER BY skills.nombre 
+                    SEPARATOR '|'
+                ) as skills_data
+                FROM cvs 
+                LEFT JOIN skill_cv ON cvs.id = skill_cv.cv_id AND skill_cv.deletedAt = 0
+                LEFT JOIN skills ON skill_cv.skill_id = skills.id AND skills.deletedAt = 0
+                WHERE cvs.id = ? $deletedCondition
+                GROUP BY cvs.id";
+        
+        $statement = $adapter->createStatement($sql);
+        $result = $statement->execute([$id]);
+        $cvData = $result->current();
+        
+        if (!$cvData) {
+            throw new \Exception("No se encontró el CV con id $id");
+        }
+        
+        // Procesar skills
+        $skillsArray = [];
+        if (!empty($cvData['skills_data'])) {
+            $skillsData = explode('|', $cvData['skills_data']);
+            foreach ($skillsData as $skillData) {
+                if (strpos($skillData, ':') !== false) {
+                    list($name, $level) = explode(':', $skillData, 2);
+                    $skillsArray[] = ['nombre' => $name, 'nivel' => $level];
+                }
+            }
+        }
+        $cvData['skills'] = $skillsArray;
+        
+        // Crear objeto CV
+        $cv = new \User\Model\Cv();
+        $cv->exchangeArray($cvData);
+        
+        return $cv;
+    }
+
     public function getCvWithUser($cvId)
     {
         $adapter = $this->tableGateway->getAdapter();

@@ -1,5 +1,14 @@
 <?php
-$title = 'Editar CV: ' . $this->escapeHtml($cv->getTitulo());
+$cvTitle = '';
+if ($cv && method_exists($cv, 'getTitulo')) {
+    $cvTitle = $cv->getTitulo();
+} elseif ($cv && isset($cv->titulo)) {
+    $cvTitle = $cv->titulo;
+} elseif (is_array($cv) && isset($cv['titulo'])) {
+    $cvTitle = $cv['titulo'];
+}
+
+$title = 'Editar CV' . ($cvTitle ? ': ' . $this->escapeHtml($cvTitle) : '');
 $this->headTitle($title);
 ?>
 
@@ -10,9 +19,21 @@ $this->headTitle($title);
                 <a href="<?= $this->url('cvs') ?>" class="btn btn-secondary">
                     <i class="fas fa-arrow-left"></i> Volver a CVs
                 </a>
-                <a href="<?= $this->url('cvs/view', ['id' => $cv->getId()]) ?>" class="btn btn-outline-info">
+<?php 
+$cvId = '';
+if ($cv && method_exists($cv, 'getId')) {
+    $cvId = $cv->getId();
+} elseif ($cv && isset($cv->id)) {
+    $cvId = $cv->id;
+} elseif (is_array($cv) && isset($cv['id'])) {
+    $cvId = $cv['id'];
+}
+?>
+                <?php if ($cvId): ?>
+                <a href="<?= $this->url('cvs/view', ['id' => $cvId]) ?>" class="btn btn-outline-info">
                     <i class="fas fa-eye"></i> Ver CV
                 </a>
+                <?php endif; ?>
             </div>
             
             <div class="card modern-form-card">
