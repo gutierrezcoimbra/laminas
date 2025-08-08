@@ -11,6 +11,7 @@ class Cv
     private string $titulo = '';
     private ?string $resumen = null;
     private ?string $contenido = null;
+    private array $skills = [];
     private int $deletedAt = 0;
     private ?\DateTime $createdAt = null;
     private ?\DateTime $updatedAt = null;
@@ -27,6 +28,21 @@ class Cv
         $this->titulo = $data['titulo'] ?? '';
         $this->resumen = $data['resumen'] ?? null;
         $this->contenido = $data['contenido'] ?? null;
+        // Handle skills - can be array or JSON string
+        if (isset($data['skills'])) {
+            if (is_string($data['skills'])) {
+                // If it's a JSON string, decode it
+                $decodedSkills = json_decode($data['skills'], true);
+                $this->skills = is_array($decodedSkills) ? $decodedSkills : [];
+            } elseif (is_array($data['skills'])) {
+                // If it's already an array, use it directly
+                $this->skills = $data['skills'];
+            } else {
+                $this->skills = [];
+            }
+        } else {
+            $this->skills = [];
+        }
         $this->deletedAt = isset($data['deletedAt']) ? (int) $data['deletedAt'] : 0;
         
         if (isset($data['createdAt']) && !empty($data['createdAt'])) {
@@ -54,6 +70,7 @@ class Cv
             'titulo' => $this->titulo,
             'resumen' => $this->resumen,
             'contenido' => $this->contenido,
+            'skills' => $this->skills,
             'deletedAt' => $this->deletedAt,
             'createdAt' => $this->createdAt ? $this->createdAt->format('Y-m-d H:i:s') : null,
             'updatedAt' => $this->updatedAt ? $this->updatedAt->format('Y-m-d H:i:s') : null,
@@ -66,6 +83,7 @@ class Cv
     public function getTitulo(): string { return $this->titulo; }
     public function getResumen(): ?string { return $this->resumen; }
     public function getContenido(): ?string { return $this->contenido; }
+    public function getSkills(): array { return $this->skills; }
     public function getDeletedAt(): int { return $this->deletedAt; }
     public function getCreatedAt(): ?\DateTime { return $this->createdAt; }
     public function getUpdatedAt(): ?\DateTime { return $this->updatedAt; }
@@ -76,5 +94,6 @@ class Cv
     public function setTitulo(string $titulo): void { $this->titulo = $titulo; }
     public function setResumen(?string $resumen): void { $this->resumen = $resumen; }
     public function setContenido(?string $contenido): void { $this->contenido = $contenido; }
+    public function setSkills(array $skills): void { $this->skills = $skills; }
     public function setDeletedAt(int $deletedAt): void { $this->deletedAt = $deletedAt; }
 }

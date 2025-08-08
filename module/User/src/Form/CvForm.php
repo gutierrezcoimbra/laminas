@@ -11,12 +11,14 @@ use Laminas\InputFilter\InputFilter;
 class CvForm extends Form
 {
     private $userTable;
+    private $skillsTable;
     
-    public function __construct($userTable = null)
+    public function __construct($userTable = null, $skillsTable = null)
     {
         parent::__construct('cv-form');
         
         $this->userTable = $userTable;
+        $this->skillsTable = $skillsTable;
         $this->setAttribute('method', 'post');
         $this->setAttribute('class', 'form-horizontal');
         
@@ -89,6 +91,17 @@ class CvForm extends Form
             ],
         ]);
         
+        // Skills - Campo dinámico para múltiples skills
+        $this->add([
+            'name' => 'skills',
+            'type' => Element\Hidden::class,
+            'attributes' => [
+                'id' => 'skills-data',
+                'class' => 'skills-hidden-field',
+                'value' => '', // Inicializar como string vacío
+            ],
+        ]);
+        
         // Submit button
         $this->add([
             'name' => 'submit',
@@ -130,6 +143,27 @@ class CvForm extends Form
         }
         
         return $options;
+    }
+    
+    public function getAvailableSkills(): array
+    {
+        $skills = [];
+        
+        if ($this->skillsTable) {
+            try {
+                $skillsData = $this->skillsTable->fetchAll();
+                foreach ($skillsData as $skill) {
+                    $skills[] = [
+                        'id' => $skill->getId(),
+                        'nombre' => $skill->getNombre()
+                    ];
+                }
+            } catch (\Exception $e) {
+                // En caso de error, devolver array vacío
+            }
+        }
+        
+        return $skills;
     }
     
     private function createInputFilter(): InputFilter
@@ -233,6 +267,15 @@ class CvForm extends Form
                         ],
                     ],
                 ],
+            ],
+        ]);
+        
+        // Skills
+        $inputFilter->add([
+            'name' => 'skills',
+            'required' => false,
+            'filters' => [
+                ['name' => 'StringTrim'],
             ],
         ]);
         

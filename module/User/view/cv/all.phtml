@@ -62,7 +62,7 @@ $this->headTitle($title);
                                                 <small class="cv-id text-muted">ID: <?= $this->escapeHtml($cv->id) ?></small>
                                             </div>
                                         </div>
-                                        <div class="col-md-3">
+                                        <div class="col-md-2">
                                             <div class="user-info">
                                                 <div class="user-name-cv">
                                                     <i class="fas fa-user text-muted me-2"></i>
@@ -74,12 +74,12 @@ $this->headTitle($title);
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-3">
+                                        <div class="col-md-2">
                                             <div class="cv-summary">
                                                 <?php if (!empty($cv->resumen)): ?>
                                                     <p class="summary-text">
-                                                        <?= $this->escapeHtml(substr($cv->resumen, 0, 100)) ?>
-                                                        <?= strlen($cv->resumen ?? '') > 100 ? '...' : '' ?>
+                                                        <?= $this->escapeHtml(substr($cv->resumen, 0, 80)) ?>
+                                                        <?= strlen($cv->resumen ?? '') > 80 ? '...' : '' ?>
                                                     </p>
                                                 <?php else: ?>
                                                     <span class="no-summary">Sin resumen disponible</span>
@@ -88,6 +88,53 @@ $this->headTitle($title);
                                                     <i class="fas fa-calendar text-muted me-1"></i>
                                                     <small><?= !empty($cv->createdAt) ? (new DateTime($cv->createdAt))->format('d/m/Y H:i') : 'N/A' ?></small>
                                                 </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="cv-skills">
+                                                <?php if (!empty($cv->skills)): ?>
+                                                    <h6 class="skills-title">
+                                                        <i class="fas fa-tools text-muted me-1"></i>Skills
+                                                    </h6>
+                                                    <div class="skills-container-cards">
+                                                        <?php foreach (array_slice($cv->skills, 0, 4) as $skill): ?>
+                                                            <?php
+                                                            $badgeClass = match($skill['nivel']) {
+                                                                'basico' => 'badge-secondary',
+                                                                'intermedio' => 'badge-info', 
+                                                                'avanzado' => 'badge-warning',
+                                                                'experto' => 'badge-success',
+                                                                default => 'badge-secondary'
+                                                            };
+                                                            
+                                                            // Colores inline como respaldo
+                                                            $inlineStyle = match($skill['nivel']) {
+                                                                'basico' => 'background-color: #6c757d !important; color: #ffffff !important;',
+                                                                'intermedio' => 'background-color: #17a2b8 !important; color: #ffffff !important;',
+                                                                'avanzado' => 'background-color: #fd7e14 !important; color: #ffffff !important;',
+                                                                'experto' => 'background-color: #28a745 !important; color: #ffffff !important;',
+                                                                default => 'background-color: #6c757d !important; color: #ffffff !important;'
+                                                            };
+                                                            ?>
+                                                            <span class="badge <?= $badgeClass ?> skill-badge-card me-1 mb-1" 
+                                                                  style="<?= $inlineStyle ?>" 
+                                                                  title="Nivel: <?= ucfirst($skill['nivel']) ?>">
+                                                                <?= $this->escapeHtml($skill['nombre']) ?>
+                                                            </span>
+                                                        <?php endforeach; ?>
+                                                        <?php if (count($cv->skills) > 4): ?>
+                                                            <span class="badge badge-light skill-badge-card" 
+                                                                  style="background-color: #f8f9fa !important; color: #6c757d !important; border: 1px solid #dee2e6 !important;">
+                                                                +<?= count($cv->skills) - 4 ?>
+                                                            </span>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                <?php else: ?>
+                                                    <div class="no-skills">
+                                                        <i class="fas fa-minus-circle text-muted me-1"></i>
+                                                        <small class="text-muted">Sin skills</small>
+                                                    </div>
+                                                <?php endif; ?>
                                             </div>
                                         </div>
                                         <div class="col-md-2">
@@ -230,6 +277,40 @@ $this->headTitle($title);
 .cv-date {
     color: #6c757d;
     font-size: 0.75rem;
+}
+
+/* CV Skills */
+.cv-skills {
+    padding: 0 10px;
+}
+
+.skills-title {
+    color: #495057;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.skills-container-cards {
+    line-height: 1.6;
+}
+
+.skill-badge-card {
+    font-size: 0.65em;
+    padding: 0.3em 0.5em;
+    border-radius: 0.25rem;
+    font-weight: 500;
+    display: inline-block;
+    margin-right: 0.25rem;
+    margin-bottom: 0.25rem;
+}
+
+.no-skills {
+    color: #adb5bd;
+    font-style: italic;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
 }
 
 /* Action Buttons for CVs */

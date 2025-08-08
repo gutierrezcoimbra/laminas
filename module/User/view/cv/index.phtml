@@ -32,13 +32,40 @@ $this->headTitle($title);
                                         </p>
                                     <?php endif; ?>
                                     
+                                    <?php if (!empty($cv->getSkills())): ?>
+                                        <div class="mb-3">
+                                            <h6 class="text-muted mb-2">
+                                                <i class="fas fa-tools"></i> Skills
+                                            </h6>
+                                            <div class="skills-container">
+                                                <?php foreach (array_slice($cv->getSkills(), 0, 4) as $skill): ?>
+                                                    <?php
+                                                    $badgeClass = match($skill['nivel']) {
+                                                        'basico' => 'badge-secondary',
+                                                        'intermedio' => 'badge-info',
+                                                        'avanzado' => 'badge-warning',
+                                                        'experto' => 'badge-success',
+                                                        default => 'badge-secondary'
+                                                    };
+                                                    ?>
+                                                    <span class="badge <?= $badgeClass ?> me-1 mb-1" title="Nivel: <?= ucfirst($skill['nivel']) ?>">
+                                                        <?= $this->escapeHtml($skill['nombre']) ?>
+                                                    </span>
+                                                <?php endforeach; ?>
+                                                <?php if (count($cv->getSkills()) > 4): ?>
+                                                    <span class="badge badge-light">+<?= count($cv->getSkills()) - 4 ?> más</span>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                    <?php endif; ?>
+                                    
                                     <div class="text-muted small mb-3">
                                         <i class="fas fa-calendar"></i>
                                         Creado: <?= $cv->getCreatedAt() ? $cv->getCreatedAt()->format('d/m/Y H:i') : 'N/A' ?>
                                     </div>
                                     
-                                    <a href="<?= $this->url('cv/view', ['id' => $cv->getId()]) ?>" 
-                                       class="btn btn-primary">
+                                    <a href="<?= $this->url('cvs/view', ['id' => $cv->getId()]) ?>" 
+                                       class="btn btn-primary btn-sm">
                                         <i class="fas fa-eye"></i> Ver CV Completo
                                     </a>
                                 </div>

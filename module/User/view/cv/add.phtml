@@ -32,3 +32,8 @@ $this->headTitle($title);
         </div>
     </div>
 </div>
+
+<script>
+// Pasar skills disponibles al JavaScript
+window.availableSkills = <?= json_encode($availableSkills ?? []) ?>;
+</script>

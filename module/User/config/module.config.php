@@ -178,7 +178,8 @@ return [
             Controller\CvController::class => function($container) {
                 $cvTable = $container->get(\User\Model\CvTable::class);
                 $userTable = $container->get(\User\Model\UserTable::class);
-                return new \User\Controller\CvController($cvTable, $userTable);
+                $skillTable = $container->get(\User\Model\SkillTable::class);
+                return new \User\Controller\CvController($cvTable, $userTable, $skillTable);
             },
         ],
     ],
@@ -208,6 +209,17 @@ return [
             \User\Model\CvTable::class => function($container) {
                 $tableGateway = $container->get(\User\Model\CvTableGateway::class);
                 return new \User\Model\CvTable($tableGateway);
+            },
+            // Factories para Skills
+            \User\Model\SkillTableGateway::class => function($container) {
+                $dbAdapter = $container->get('Laminas\\Db\\Adapter\\Adapter');
+                $resultSetPrototype = new \Laminas\Db\ResultSet\ResultSet();
+                $resultSetPrototype->setArrayObjectPrototype(new \User\Model\Skill());
+                return new \Laminas\Db\TableGateway\TableGateway('skills', $dbAdapter, null, $resultSetPrototype);
+            },
+            \User\Model\SkillTable::class => function($container) {
+                $tableGateway = $container->get(\User\Model\SkillTableGateway::class);
+                return new \User\Model\SkillTable($tableGateway);
             },
         ],
     ],

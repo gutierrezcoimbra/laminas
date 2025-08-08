@@ -57,6 +57,63 @@ $this->headTitle($title);
                         </div>
                     <?php endif; ?>
 
+                    <!-- Skills -->
+                    <?php if (!empty($cv->skills)): ?>
+                        <div class="mb-4">
+                            <h4><i class="fas fa-tools"></i> Habilidades Técnicas</h4>
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="skills-grid">
+                                        <?php foreach ($cv->skills as $skill): ?>
+                                            <?php
+                                            $badgeClass = match($skill['nivel']) {
+                                                'basico' => 'badge-secondary',
+                                                'intermedio' => 'badge-info', 
+                                                'avanzado' => 'badge-warning',
+                                                'experto' => 'badge-success',
+                                                default => 'badge-secondary'
+                                            };
+                                            
+                                            // Colores inline como respaldo
+                                            $inlineStyle = match($skill['nivel']) {
+                                                'basico' => 'background-color: #6c757d !important; color: #ffffff !important;',
+                                                'intermedio' => 'background-color: #17a2b8 !important; color: #ffffff !important;',
+                                                'avanzado' => 'background-color: #fd7e14 !important; color: #ffffff !important;',
+                                                'experto' => 'background-color: #28a745 !important; color: #ffffff !important;',
+                                                default => 'background-color: #6c757d !important; color: #ffffff !important;'
+                                            };
+                                            
+                                            $nivelTexto = match($skill['nivel']) {
+                                                'basico' => 'Básico',
+                                                'intermedio' => 'Intermedio',
+                                                'avanzado' => 'Avanzado',
+                                                'experto' => 'Experto',
+                                                default => 'Básico'
+                                            };
+                                            ?>
+                                            <div class="skill-item">
+                                                <span class="badge <?= $badgeClass ?> skill-badge-large me-2" 
+                                                      style="<?= $inlineStyle ?>" 
+                                                      title="Nivel: <?= $nivelTexto ?>">
+                                                    <?= $this->escapeHtml($skill['nombre']) ?>
+                                                </span>
+                                                <small class="skill-level text-muted"><?= $nivelTexto ?></small>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <?php else: ?>
+                        <div class="mb-4">
+                            <h4><i class="fas fa-tools"></i> Habilidades Técnicas</h4>
+                            <div class="alert alert-light">
+                                <i class="fas fa-info-circle me-2"></i>
+                                No se han registrado habilidades técnicas para este CV.
+                            </div>
+                        </div>
+                    <?php endif; ?>
+
                     <!-- Contenido -->
                     <?php if (!empty($cv->contenido)): ?>
                         <div class="mb-4">
@@ -85,8 +142,72 @@ $this->headTitle($title);
 </div>
 
 <style>
+/* Skills Grid Styling */
+.skills-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: flex-start;
+}
+
+.skill-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.skill-badge-large {
+    font-size: 0.9em !important;
+    padding: 0.5em 0.8em !important;
+    border-radius: 0.375rem !important;
+    font-weight: 600 !important;
+    display: inline-block !important;
+    margin-bottom: 5px !important;
+    border: none !important;
+    min-width: 80px;
+    text-align: center;
+}
+
+.skill-level {
+    font-size: 0.75em;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .skills-grid {
+        justify-content: center;
+        gap: 10px;
+    }
+    
+    .skill-item {
+        margin-bottom: 10px;
+    }
+    
+    .skill-badge-large {
+        min-width: 70px;
+        font-size: 0.8em !important;
+        padding: 0.4em 0.6em !important;
+    }
+}
+
 @media print {
     .btn, .mb-3 { display: none !important; }
     .card { border: none !important; box-shadow: none !important; }
+    
+    .skills-grid {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 10px !important;
+    }
+    
+    .skill-badge-large {
+        -webkit-print-color-adjust: exact !important;
+        color-adjust: exact !important;
+    }
 }
 </style>

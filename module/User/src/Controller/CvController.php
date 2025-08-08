@@ -13,11 +13,13 @@ class CvController extends AbstractActionController
 {
     private $cvTable;
     private $userTable;
+    private $skillTable;
 
-    public function __construct(CvTable $cvTable, UserTable $userTable)
+    public function __construct(CvTable $cvTable, UserTable $userTable, $skillTable = null)
     {
         $this->cvTable = $cvTable;
         $this->userTable = $userTable;
+        $this->skillTable = $skillTable;
     }
 
     public function indexAction()
@@ -110,17 +112,41 @@ class CvController extends AbstractActionController
         try {
             $cv = $this->cvTable->getCv($cvId);
             
-            $form = new \User\Form\CvForm($this->userTable);
+            $form = new \User\Form\CvForm($this->userTable, $this->skillTable);
             $form->get('submit')->setValue('Actualizar CV');
             
             $request = $this->getRequest();
             
             if (!$request->isPost()) {
+                // Obtener skills del CV para edición
+                $cvSkills = [];
+                if ($this->skillTable) {
+                    try {
+                        $cvSkills = $this->skillTable->getCvSkills($cvId);
+                    } catch (\Exception $e) {
+                        // En caso de error, usar array vacío
+                    }
+                }
+                
                 // Poblar el formulario con los datos del CV
-                $form->setData($cv->getArrayCopy());
+                $cvData = $cv->getArrayCopy();
+                $cvData['skills'] = json_encode($cvSkills);
+                $form->setData($cvData);
+                
+                $availableSkills = [];
+                if ($this->skillTable) {
+                    try {
+                        $availableSkills = $form->getAvailableSkills();
+                    } catch (\Exception $e) {
+                        // En caso de error, usar array vacío
+                    }
+                }
+                
                 return new ViewModel([
                     'form' => $form,
                     'cv' => $cv,
+                    'availableSkills' => $availableSkills,
+                    'cvSkills' => $cvSkills,
                 ]);
             }
             
@@ -139,19 +165,39 @@ class CvController extends AbstractActionController
             }
             
             // Mantener el ID original
-            $data = $form->getData();
-            $data['id'] = $cv->getId();
-            $cv->exchangeArray($data);
+            $formData = $form->getData();
+            $formData['id'] = $cv->getId();
+            $cv->exchangeArray($formData);
             
             try {
-                $this->cvTable->saveCv($cv);
+                $cvId = $this->cvTable->saveCv($cv);
+                
+                // Guardar las skills si existen
+                if (!empty($formData['skills']) && $this->skillTable) {
+                    $skillsData = json_decode($formData['skills'], true);
+                    if (is_array($skillsData)) {
+                        $this->skillTable->saveSkillsForCv($cvId, $skillsData);
+                    }
+                }
+                
                 $this->flashMessenger()->addSuccessMessage('CV actualizado exitosamente');
                 return $this->redirect()->toRoute('cvs');
             } catch (\Exception $e) {
                 $this->flashMessenger()->addErrorMessage('Error al actualizar el CV: ' . $e->getMessage());
+                
+                $availableSkills = [];
+                if ($this->skillTable) {
+                    try {
+                        $availableSkills = $form->getAvailableSkills();
+                    } catch (\Exception $e2) {
+                        // En caso de error, usar array vacío
+                    }
+                }
+                
                 return new ViewModel([
                     'form' => $form,
                     'cv' => $cv,
+                    'availableSkills' => $availableSkills,
                 ]);
             }
             
@@ -197,14 +243,24 @@ class CvController extends AbstractActionController
 
     public function addAction()
     {
-        $form = new \User\Form\CvForm($this->userTable);
+        $form = new \User\Form\CvForm($this->userTable, $this->skillTable);
         $form->get('submit')->setValue('Crear CV');
         
         $request = $this->getRequest();
         
         if (!$request->isPost()) {
+            $availableSkills = [];
+            if ($this->skillTable) {
+                try {
+                    $availableSkills = $form->getAvailableSkills();
+                } catch (\Exception $e) {
+                    // En caso de error, usar array vacío
+                }
+            }
+            
             return new ViewModel([
                 'form' => $form,
+                'availableSkills' => $availableSkills,
             ]);
         }
         
@@ -222,16 +278,37 @@ class CvController extends AbstractActionController
             return $this->redirect()->toRoute('cvs');
         }
         
-        $cv->exchangeArray($form->getData());
+        $formData = $form->getData();
+        $cv->exchangeArray($formData);
         
         try {
-            $this->cvTable->saveCv($cv);
+            $cvId = $this->cvTable->saveCv($cv);
+            
+            // Guardar las skills si existen
+            if (!empty($formData['skills']) && $this->skillTable) {
+                $skillsData = json_decode($formData['skills'], true);
+                if (is_array($skillsData)) {
+                    $this->skillTable->saveSkillsForCv($cvId, $skillsData);
+                }
+            }
+            
             $this->flashMessenger()->addSuccessMessage('CV creado exitosamente');
             return $this->redirect()->toRoute('cvs');
         } catch (\Exception $e) {
             $this->flashMessenger()->addErrorMessage('Error al crear el CV: ' . $e->getMessage());
+            
+            $availableSkills = [];
+            if ($this->skillTable) {
+                try {
+                    $availableSkills = $form->getAvailableSkills();
+                } catch (\Exception $e2) {
+                    // En caso de error, usar array vacío
+                }
+            }
+            
             return new ViewModel([
                 'form' => $form,
+                'availableSkills' => $availableSkills,
             ]);
         }
     }

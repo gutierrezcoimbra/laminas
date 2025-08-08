@@ -24,13 +24,50 @@ class CvTable
     public function getCvsByUserId($userId, $includeDeleted = false)
     {
         $userId = (int) $userId;
-        $where = ['userId' => $userId];
+        $adapter = $this->tableGateway->getAdapter();
         
-        if (!$includeDeleted) {
-            $where['deletedAt'] = 0;
+        $deletedCondition = $includeDeleted ? '' : 'AND cvs.deletedAt = 0';
+        
+        $sql = "SELECT cvs.*, 
+                GROUP_CONCAT(
+                    CONCAT(skills.nombre, ':', skill_cv.nivel) 
+                    ORDER BY skills.nombre 
+                    SEPARATOR '|'
+                ) as skills_data
+                FROM cvs 
+                LEFT JOIN skill_cv ON cvs.id = skill_cv.cv_id AND skill_cv.deletedAt = 0
+                LEFT JOIN skills ON skill_cv.skill_id = skills.id AND skills.deletedAt = 0
+                WHERE cvs.userId = ? $deletedCondition
+                GROUP BY cvs.id
+                ORDER BY cvs.createdAt DESC";
+        
+        $statement = $adapter->createStatement($sql);
+        $result = $statement->execute([$userId]);
+        
+        $cvs = [];
+        foreach ($result as $row) {
+            $cvData = (array) $row;
+            
+            // Procesar las skills
+            if (!empty($cvData['skills_data'])) {
+                $skillsArray = [];
+                $skillsData = explode('|', $cvData['skills_data']);
+                foreach ($skillsData as $skillData) {
+                    if (strpos($skillData, ':') !== false) {
+                        list($name, $level) = explode(':', $skillData, 2);
+                        $skillsArray[] = ['nombre' => $name, 'nivel' => $level];
+                    }
+                }
+                $cvData['skills'] = $skillsArray;
+            } else {
+                $cvData['skills'] = [];
+            }
+            
+            unset($cvData['skills_data']);
+            $cvs[] = new Cv($cvData);
         }
         
-        return $this->tableGateway->select($where);
+        return $cvs;
     }
 
     public function getCv($id, $includeDeleted = false)
@@ -58,10 +95,18 @@ class CvTable
         $sql = 'SELECT cvs.*, 
                        users.nombre as user_nombre, 
                        users.apellidos as user_apellidos, 
-                       users.email as user_email
+                       users.email as user_email,
+                       GROUP_CONCAT(
+                           CONCAT(skills.nombre, ":", skill_cv.nivel) 
+                           ORDER BY skills.nombre 
+                           SEPARATOR "|"
+                       ) as skills_data
                 FROM cvs 
                 JOIN users ON cvs.userId = users.id 
-                WHERE cvs.id = ? AND cvs.deletedAt = 0 AND users.deletedAt = 0';
+                LEFT JOIN skill_cv ON cvs.id = skill_cv.cv_id AND skill_cv.deletedAt = 0
+                LEFT JOIN skills ON skill_cv.skill_id = skills.id AND skills.deletedAt = 0
+                WHERE cvs.id = ? AND cvs.deletedAt = 0 AND users.deletedAt = 0
+                GROUP BY cvs.id';
         
         $statement = $adapter->createStatement($sql);
         $result = $statement->execute([(int) $cvId]);
@@ -71,7 +116,25 @@ class CvTable
             throw new \Exception("No se encontró el CV con id $cvId");
         }
         
-        return (object) $row;
+        $cvData = (object) $row;
+        
+        // Procesar las skills
+        if (!empty($cvData->skills_data)) {
+            $skillsArray = [];
+            $skillsData = explode('|', $cvData->skills_data);
+            foreach ($skillsData as $skillData) {
+                if (strpos($skillData, ':') !== false) {
+                    list($name, $level) = explode(':', $skillData, 2);
+                    $skillsArray[] = ['nombre' => $name, 'nivel' => $level];
+                }
+            }
+            $cvData->skills = $skillsArray;
+        } else {
+            $cvData->skills = [];
+        }
+        
+        unset($cvData->skills_data);
+        return $cvData;
     }
 
     public function getAllCvsWithUsers()
@@ -80,10 +143,18 @@ class CvTable
         $sql = 'SELECT cvs.*, 
                        users.nombre as user_nombre, 
                        users.apellidos as user_apellidos, 
-                       users.email as user_email
+                       users.email as user_email,
+                       GROUP_CONCAT(
+                           CONCAT(skills.nombre, ":", skill_cv.nivel) 
+                           ORDER BY skills.nombre 
+                           SEPARATOR "|"
+                       ) as skills_data
                 FROM cvs 
                 JOIN users ON cvs.userId = users.id 
+                LEFT JOIN skill_cv ON cvs.id = skill_cv.cv_id AND skill_cv.deletedAt = 0
+                LEFT JOIN skills ON skill_cv.skill_id = skills.id AND skills.deletedAt = 0
                 WHERE cvs.deletedAt = 0 AND users.deletedAt = 0 
+                GROUP BY cvs.id
                 ORDER BY cvs.createdAt DESC';
         
         $statement = $adapter->createStatement($sql);
@@ -91,7 +162,25 @@ class CvTable
         
         $cvs = [];
         foreach ($result as $row) {
-            $cvs[] = (object) $row;
+            $cvData = (object) $row;
+            
+            // Procesar las skills
+            if (!empty($cvData->skills_data)) {
+                $skillsArray = [];
+                $skillsData = explode('|', $cvData->skills_data);
+                foreach ($skillsData as $skillData) {
+                    if (strpos($skillData, ':') !== false) {
+                        list($name, $level) = explode(':', $skillData, 2);
+                        $skillsArray[] = ['nombre' => $name, 'nivel' => $level];
+                    }
+                }
+                $cvData->skills = $skillsArray;
+            } else {
+                $cvData->skills = [];
+            }
+            
+            unset($cvData->skills_data);
+            $cvs[] = $cvData;
         }
         
         return $cvs;
@@ -112,9 +201,10 @@ class CvTable
     {
         $data = $cv->getArrayCopy();
         
-        // Remover campos que no deben ser actualizados manualmente
+        // Remover campos que no deben ser actualizados manualmente o no existen en la tabla
         unset($data['createdAt']);
         unset($data['updatedAt']);
+        unset($data['skills']); // Skills se manejan en tabla separada
         
         $id = (int) $cv->getId();
         
