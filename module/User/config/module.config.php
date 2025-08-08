@@ -236,6 +236,7 @@ return [
             'user/cv/add' => __DIR__ . '/../view/cv/add.phtml',
             'user/cv/edit' => __DIR__ . '/../view/cv/edit.phtml',
             'cv/partials/cv-form' => __DIR__ . '/../view/cv/partials/cv-form.phtml',
+            'view-helpers/cv-display' => __DIR__ . '/../view/view-helpers/cv-display.phtml',
         ],
     ],
     'view_helpers' => [
@@ -243,9 +244,14 @@ return [
             View\Helper\FlashMessages::class => function($container) {
                 return new View\Helper\FlashMessages();
             },
+            View\Helper\ViewCVHelper::class => function($container) {
+                $cvTable = $container->get(\User\Model\CvTable::class);
+                return new View\Helper\ViewCVHelper($cvTable);
+            },
         ],
         'aliases' => [
             'flashMessages' => View\Helper\FlashMessages::class,
+            'viewCVHelper' => View\Helper\ViewCVHelper::class,
         ],
     ],
 ];

@@ -4,8 +4,9 @@ $this->headTitle($title);
 ?>
 
 <div class="container mt-4">
+   
     <div class="row">
-        <div class="col-md-8 offset-md-2">
+        <div class="col-md-12">
             <div class="card">
                 <div class="card-header bg-danger text-white">
                     <h3 class="mb-0">
@@ -20,21 +21,7 @@ $this->headTitle($title);
                     </div>
 
                     <div class="mb-4">
-                        <h5>CV a eliminar:</h5>
-                        <div class="card">
-                            <div class="card-body">
-                                <h6 class="card-title"><?= $this->escapeHtml($cv->getTitulo()) ?></h6>
-                                <?php if (!empty($cv->getResumen())): ?>
-                                    <p class="card-text text-muted">
-                                        <?= $this->escapeHtml(substr($cv->getResumen(), 0, 150)) ?>
-                                        <?= strlen($cv->getResumen() ?? '') > 150 ? '...' : '' ?>
-                                    </p>
-                                <?php endif; ?>
-                                <small class="text-muted">
-                                    Creado: <?= $cv->getCreatedAt() ? $cv->getCreatedAt()->format('d/m/Y H:i') : 'N/A' ?>
-                                </small>
-                            </div>
-                        </div>
+                        <?= $this->viewCVHelper($cv->getId())->showButtons(false) ?>
                     </div>
 
                     <form method="post">
