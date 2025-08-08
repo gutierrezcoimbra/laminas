@@ -1,0 +1,167 @@
+<?php
+$form->prepare();
+$errors = [];
+if ($form->getMessages()) {
+    $errors = $form->getMessages();
+}
+?>
+
+<?= $this->form()->openTag($form) ?>
+
+<div class="form-sections">
+    <!-- Hidden ID field -->
+    <?= $this->formElement($form->get('id')); ?>
+    
+    <!-- Usuario Selection -->
+    <div class="form-section">
+        <h5 class="form-section-title">
+            <i class="fas fa-user me-2"></i>
+            Información del Usuario
+        </h5>
+        
+        <?= $this->partial('user/partials/form-input', [
+            'element' => $form->get('userId'),
+            'errors' => $errors
+        ]); ?>
+    </div>
+    
+    <!-- CV Information -->
+    <div class="form-section">
+        <h5 class="form-section-title">
+            <i class="fas fa-file-text me-2"></i>
+            Información del CV
+        </h5>
+        
+        <?= $this->partial('user/partials/form-input', [
+            'element' => $form->get('titulo'),
+            'errors' => $errors
+        ]); ?>
+        
+        <?= $this->partial('user/partials/form-input', [
+            'element' => $form->get('resumen'),
+            'errors' => $errors
+        ]); ?>
+        
+        <?= $this->partial('user/partials/form-input', [
+            'element' => $form->get('contenido'),
+            'errors' => $errors
+        ]); ?>
+    </div>
+</div>
+
+<!-- Form Actions -->
+<div class="form-actions">
+    <div class="row">
+        <div class="col-sm-10 offset-sm-2">
+            <div class="btn-group">
+                <?= $this->formElement($form->get('submit')); ?>
+                <a href="<?= $cancelUrl ?>" class="btn btn-secondary">
+                    <i class="fas fa-times me-2"></i>Cancelar
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<?= $this->form()->closeTag() ?>
+
+<style>
+.modern-form-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.modern-form-header {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border: none;
+    padding: 20px 25px;
+}
+
+.form-sections {
+    padding: 20px 0;
+}
+
+.form-section {
+    margin-bottom: 30px;
+    padding: 20px;
+    background: rgba(248, 249, 250, 0.5);
+    border-radius: 10px;
+    border-left: 4px solid #28a745;
+}
+
+.form-section-title {
+    color: #2c3e50;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.form-actions {
+    background: #f8f9fa;
+    padding: 20px 25px;
+    margin: 0 -25px -25px -25px;
+    border-top: 1px solid #dee2e6;
+}
+
+.btn-group .btn {
+    margin-right: 10px;
+}
+
+textarea.form-control {
+    resize: vertical;
+    min-height: 100px;
+}
+
+select.form-control {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.5rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+}
+
+/* Character counter styles */
+.char-counter {
+    font-size: 0.8rem;
+    color: #6c757d;
+    text-align: right;
+    margin-top: 5px;
+}
+
+.char-counter.warning {
+    color: #ffc107;
+}
+
+.char-counter.danger {
+    color: #dc3545;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Character counter for textareas
+    const textareas = document.querySelectorAll('textarea[maxlength]');
+    textareas.forEach(function(textarea) {
+        const maxLength = parseInt(textarea.getAttribute('maxlength'));
+        const counter = document.createElement('div');
+        counter.className = 'char-counter';
+        textarea.parentNode.appendChild(counter);
+        
+        function updateCounter() {
+            const currentLength = textarea.value.length;
+            counter.textContent = currentLength + '/' + maxLength + ' caracteres';
+            
+            // Color coding
+            counter.className = 'char-counter';
+            if (currentLength > maxLength * 0.9) {
+                counter.classList.add('danger');
+            } else if (currentLength > maxLength * 0.7) {
+                counter.classList.add('warning');
+            }
+        }
+        
+        textarea.addEventListener('input', updateCounter);
+        updateCounter(); // Initial count
+    });
+});
+</script>

@@ -73,13 +73,112 @@ return [
                     ],
                 ],
             ],
+            // Rutas para CVs individuales (desde perfil de usuario)
+            'cv' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/user/:userId/cv',
+                    'defaults' => [
+                        'controller' => Controller\CvController::class,
+                        'action' => 'index',
+                    ],
+                    'constraints' => [
+                        'userId' => '[0-9]+',
+                    ],
+                ],
+                'may_terminate' => true,
+                'child_routes' => [
+                    'view' => [
+                        'type' => Segment::class,
+                        'options' => [
+                            'route' => '/view/:id',
+                            'defaults' => [
+                                'controller' => Controller\CvController::class,
+                                'action' => 'view',
+                            ],
+                            'constraints' => [
+                                'id' => '[0-9]+',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            // Nueva ruta para módulo CVs general
+            'cvs' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/cvs',
+                    'defaults' => [
+                        'controller' => Controller\CvController::class,
+                        'action' => 'all',
+                    ],
+                ],
+                'may_terminate' => true,
+                'child_routes' => [
+                    'view' => [
+                        'type' => Segment::class,
+                        'options' => [
+                            'route' => '/view/:id',
+                            'defaults' => [
+                                'controller' => Controller\CvController::class,
+                                'action' => 'viewGeneral',
+                            ],
+                            'constraints' => [
+                                'id' => '[0-9]+',
+                            ],
+                        ],
+                    ],
+                    'edit' => [
+                        'type' => Segment::class,
+                        'options' => [
+                            'route' => '/edit/:id',
+                            'defaults' => [
+                                'controller' => Controller\CvController::class,
+                                'action' => 'edit',
+                            ],
+                            'constraints' => [
+                                'id' => '[0-9]+',
+                            ],
+                        ],
+                    ],
+                    'delete' => [
+                        'type' => Segment::class,
+                        'options' => [
+                            'route' => '/delete/:id',
+                            'defaults' => [
+                                'controller' => Controller\CvController::class,
+                                'action' => 'delete',
+                            ],
+                            'constraints' => [
+                                'id' => '[0-9]+',
+                            ],
+                        ],
+                    ],
+                    'add' => [
+                        'type' => Literal::class,
+                        'options' => [
+                            'route' => '/add',
+                            'defaults' => [
+                                'controller' => Controller\CvController::class,
+                                'action' => 'add',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [
         'factories' => [
             Controller\UserController::class => function($container) {
                 $userTable = $container->get(\User\Model\UserTable::class);
-                return new \User\Controller\UserController($userTable);
+                $cvTable = $container->get(\User\Model\CvTable::class);
+                return new \User\Controller\UserController($userTable, $cvTable);
+            },
+            Controller\CvController::class => function($container) {
+                $cvTable = $container->get(\User\Model\CvTable::class);
+                $userTable = $container->get(\User\Model\UserTable::class);
+                return new \User\Controller\CvController($cvTable, $userTable);
             },
         ],
     ],
@@ -99,11 +198,32 @@ return [
                 $tableGateway = $container->get(\User\Model\UserTableGateway::class);
                 return new \User\Model\UserTable($tableGateway);
             },
+            // Nuevas factories para CVs
+            \User\Model\CvTableGateway::class => function($container) {
+                $dbAdapter = $container->get('Laminas\\Db\\Adapter\\Adapter');
+                $resultSetPrototype = new \Laminas\Db\ResultSet\ResultSet();
+                $resultSetPrototype->setArrayObjectPrototype(new \User\Model\Cv());
+                return new \Laminas\Db\TableGateway\TableGateway('cvs', $dbAdapter, null, $resultSetPrototype);
+            },
+            \User\Model\CvTable::class => function($container) {
+                $tableGateway = $container->get(\User\Model\CvTableGateway::class);
+                return new \User\Model\CvTable($tableGateway);
+            },
         ],
     ],
     'view_manager' => [
         'template_path_stack' => [
             'user' => __DIR__ . '/../view',
+        ],
+        'template_map' => [
+            'user/cv/index' => __DIR__ . '/../view/cv/index.phtml',
+            'user/cv/view' => __DIR__ . '/../view/cv/view.phtml',
+            'user/cv/all' => __DIR__ . '/../view/cv/all.phtml',
+            'user/cv/view-general' => __DIR__ . '/../view/cv/view-general.phtml',
+            'user/cv/delete' => __DIR__ . '/../view/cv/delete.phtml',
+            'user/cv/add' => __DIR__ . '/../view/cv/add.phtml',
+            'user/cv/edit' => __DIR__ . '/../view/cv/edit.phtml',
+            'cv/partials/cv-form' => __DIR__ . '/../view/cv/partials/cv-form.phtml',
         ],
     ],
     'view_helpers' => [

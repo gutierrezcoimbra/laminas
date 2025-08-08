@@ -8,16 +8,19 @@ use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
 use Laminas\Http\Request;
 use User\Model\UserTable;
+use User\Model\CvTable;
 use User\Form\UserForm;
 use User\Model\User;
 
 class UserController extends AbstractActionController
 {
     private $userTable;
+    private $cvTable;
 
-    public function __construct(UserTable $userTable)
+    public function __construct(UserTable $userTable, CvTable $cvTable = null)
     {
         $this->userTable = $userTable;
+        $this->cvTable = $cvTable;
     }
 
     public function indexAction()
@@ -33,11 +36,24 @@ class UserController extends AbstractActionController
         if ($id === 0) {
             return $this->redirect()->toRoute('user');
         }
-        $user = $this->userTable->getUser($id);
+        
+        try {
+            $user = $this->userTable->getUser($id);
+            $cvs = [];
+            
+            // Si tenemos CvTable disponible, obtenemos los CVs
+            if ($this->cvTable) {
+                $cvs = $this->cvTable->getCvsByUserId($id);
+            }
 
-        return new ViewModel([
-            'user' => $user,
-        ]);
+            return new ViewModel([
+                'user' => $user,
+                'cvs' => $cvs,
+            ]);
+        } catch (\Exception $e) {
+            $this->flashMessenger()->addErrorMessage('Usuario no encontrado');
+            return $this->redirect()->toRoute('user');
+        }
     }
     
     public function addAction()

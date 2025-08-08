@@ -1,0 +1,57 @@
+<?php
+$title = 'CVs de ' . $this->escapeHtml($user->getNombre() . ' ' . $user->getApellidos());
+$this->headTitle($title);
+?>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1><?= $title ?></h1>
+            
+            <div class="mb-3">
+                <a href="<?= $this->url('user') ?>" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver a Usuarios
+                </a>
+            </div>
+
+            <?php if (count($cvs) > 0): ?>
+                <div class="row">
+                    <?php foreach ($cvs as $cv): ?>
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0">
+                                        <?= $this->escapeHtml($cv->getTitulo()) ?>
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <?php if ($cv->getResumen()): ?>
+                                        <p class="card-text">
+                                            <?= $this->escapeHtml(substr($cv->getResumen(), 0, 150)) ?>
+                                            <?= strlen($cv->getResumen() ?? '') > 150 ? '...' : '' ?>
+                                        </p>
+                                    <?php endif; ?>
+                                    
+                                    <div class="text-muted small mb-3">
+                                        <i class="fas fa-calendar"></i>
+                                        Creado: <?= $cv->getCreatedAt() ? $cv->getCreatedAt()->format('d/m/Y H:i') : 'N/A' ?>
+                                    </div>
+                                    
+                                    <a href="<?= $this->url('cv/view', ['id' => $cv->getId()]) ?>" 
+                                       class="btn btn-primary">
+                                        <i class="fas fa-eye"></i> Ver CV Completo
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php else: ?>
+                <div class="alert alert-info">
+                    <h4><i class="fas fa-info-circle"></i> Sin CVs</h4>
+                    <p>Este usuario no tiene CVs registrados.</p>
+                </div>
+            <?php endif; ?>
+        </div>
+    </div>
+</div>

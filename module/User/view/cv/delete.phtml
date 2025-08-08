@@ -1,0 +1,55 @@
+<?php
+$title = 'Eliminar CV: ' . $this->escapeHtml($cv->getTitulo());
+$this->headTitle($title);
+?>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h3 class="mb-0">
+                        <i class="fas fa-exclamation-triangle"></i> 
+                        Confirmar Eliminación
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <h5><i class="fas fa-warning"></i> ¿Está seguro?</h5>
+                        <p class="mb-0">Esta acción eliminará el CV de forma permanente.</p>
+                    </div>
+
+                    <div class="mb-4">
+                        <h5>CV a eliminar:</h5>
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="card-title"><?= $this->escapeHtml($cv->getTitulo()) ?></h6>
+                                <?php if (!empty($cv->getResumen())): ?>
+                                    <p class="card-text text-muted">
+                                        <?= $this->escapeHtml(substr($cv->getResumen(), 0, 150)) ?>
+                                        <?= strlen($cv->getResumen() ?? '') > 150 ? '...' : '' ?>
+                                    </p>
+                                <?php endif; ?>
+                                <small class="text-muted">
+                                    Creado: <?= $cv->getCreatedAt() ? $cv->getCreatedAt()->format('d/m/Y H:i') : 'N/A' ?>
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form method="post">
+                        <div class="d-flex justify-content-between">
+                            <a href="<?= $this->url('cvs') ?>" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Cancelar
+                            </a>
+                            <div>
+                                <input type="submit" name="del" value="No" class="btn btn-outline-secondary me-2" />
+                                <input type="submit" name="del" value="Sí" class="btn btn-danger" />
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

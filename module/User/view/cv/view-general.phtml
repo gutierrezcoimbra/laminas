@@ -1,0 +1,92 @@
+<?php
+$title = 'CV: ' . $this->escapeHtml($cv->titulo);
+$this->headTitle($title);
+?>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="mb-3">
+                <a href="<?= $this->url('cvs') ?>" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver a CVs
+                </a>
+                <a href="<?= $this->url('cvs/edit', ['id' => $cv->id]) ?>" class="btn btn-warning">
+                    <i class="fas fa-edit"></i> Editar CV
+                </a>
+            </div>
+
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h1 class="mb-0"><?= $this->escapeHtml($cv->titulo) ?></h1>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <h5 class="mb-0">
+                                <i class="fas fa-user"></i>
+                                <?= $this->escapeHtml($cv->user_nombre . ' ' . $cv->user_apellidos) ?>
+                            </h5>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-body">
+                    <!-- Información del usuario -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5><i class="fas fa-envelope"></i> Contacto</h5>
+                            <p class="text-muted"><?= $this->escapeHtml($cv->user_email) ?></p>
+                        </div>
+                        <div class="col-md-6">
+                            <h5><i class="fas fa-calendar-alt"></i> Fecha de Creación</h5>
+                            <p class="text-muted">
+                                <?= !empty($cv->createdAt) ? (new DateTime($cv->createdAt))->format('d/m/Y H:i') : 'N/A' ?>
+                            </p>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <!-- Resumen -->
+                    <?php if (!empty($cv->resumen)): ?>
+                        <div class="mb-4">
+                            <h4><i class="fas fa-file-text"></i> Resumen</h4>
+                            <div class="alert alert-light">
+                                <?= $this->escapeHtml($cv->resumen) ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+
+                    <!-- Contenido -->
+                    <?php if (!empty($cv->contenido)): ?>
+                        <div class="mb-4">
+                            <h4><i class="fas fa-document"></i> Contenido</h4>
+                            <div class="card">
+                                <div class="card-body">
+                                    <?= nl2br($this->escapeHtml($cv->contenido)) ?>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+
+                    <!-- Acciones -->
+                    <div class="text-end mt-4">
+                        <button onclick="window.print()" class="btn btn-outline-primary">
+                            <i class="fas fa-print"></i> Imprimir CV
+                        </button>
+                        <a href="<?= $this->url('cvs/edit', ['id' => $cv->id]) ?>" class="btn btn-warning">
+                            <i class="fas fa-edit"></i> Editar CV
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+@media print {
+    .btn, .mb-3 { display: none !important; }
+    .card { border: none !important; box-shadow: none !important; }
+}
+</style>

@@ -1,0 +1,37 @@
+<?php
+$title = 'Editar CV: ' . $this->escapeHtml($cv->getTitulo());
+$this->headTitle($title);
+?>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-10 offset-md-1">
+            <div class="mb-3">
+                <a href="<?= $this->url('cvs') ?>" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver a CVs
+                </a>
+                <a href="<?= $this->url('cvs/view', ['id' => $cv->getId()]) ?>" class="btn btn-outline-info">
+                    <i class="fas fa-eye"></i> Ver CV
+                </a>
+            </div>
+            
+            <div class="card modern-form-card">
+                <div class="card-header modern-form-header">
+                    <h3 class="mb-0 text-white">
+                        <i class="fas fa-edit me-2"></i>
+                        Editar CV
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <?= $this->partial('user/partials/flash-messages'); ?>
+                    
+                    <?= $this->partial('cv/partials/cv-form', [
+                        'form' => $form,
+                        'submitText' => 'Actualizar CV',
+                        'cancelUrl' => $this->url('cvs')
+                    ]); ?>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
