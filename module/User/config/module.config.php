@@ -226,6 +226,7 @@ return [
     'view_manager' => [
         'template_path_stack' => [
             'user' => __DIR__ . '/../view',
+            'zfc-datagrid' => __DIR__ . '/../view', // Para plantillas personalizadas de ZfcDatagrid
         ],
         'template_map' => [
             'user/cv/index' => __DIR__ . '/../view/cv/index.phtml',
@@ -237,6 +238,7 @@ return [
             'user/cv/edit' => __DIR__ . '/../view/cv/edit.phtml',
             'cv/partials/cv-form' => __DIR__ . '/../view/cv/partials/cv-form.phtml',
             'view-helpers/cv-display' => __DIR__ . '/../view/view-helpers/cv-display.phtml',
+            'zfc-datagrid/toolbar/custom-toolbar' => __DIR__ . '/../view/zfc-datagrid/toolbar/custom-toolbar.phtml',
         ],
     ],
     'view_helpers' => [

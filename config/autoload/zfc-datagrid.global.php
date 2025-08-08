@@ -41,6 +41,7 @@ return [
                 'pagination' => [
                     'all' => true,
                 ],
+                'locale' => 'es_ES',
             ],
         ],
     ],

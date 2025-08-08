@@ -21,6 +21,11 @@ class UserTable
         return $this->tableGateway->getAdapter();
     }
 
+    public function getTableGateway()
+    {
+        return $this->tableGateway;
+    }
+
     public function fetchAll()
     {
         return $this->tableGateway->select();

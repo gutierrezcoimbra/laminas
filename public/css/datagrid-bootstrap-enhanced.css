@@ -1,0 +1,314 @@
+/* 
+ * CSS Avanzado para ZfcDatagrid con Bootstrap 5
+ * Componentes y utilidades Bootstrap integradas
+ */
+
+/* ========== BADGES Y ALERTS ========== */
+
+/* Badge personalizado para estado de usuarios */
+.zfcDatagrid .user-status-badge {
+    font-size: 0.75rem !important;
+    padding: 0.25em 0.5em !important;
+    border-radius: var(--bs-border-radius-pill) !important;
+}
+
+.zfcDatagrid .user-status-active {
+    background-color: var(--bs-success) !important;
+    color: var(--bs-white) !important;
+}
+
+.zfcDatagrid .user-status-inactive {
+    background-color: var(--bs-secondary) !important;
+    color: var(--bs-white) !important;
+}
+
+/* Alert para información de la tabla */
+.datagrid-alert {
+    border-radius: var(--bs-border-radius-lg) !important;
+    border: none !important;
+    box-shadow: var(--bs-box-shadow-sm) !important;
+}
+
+.datagrid-alert .alert-icon {
+    font-size: 1.25rem !important;
+    margin-right: 0.5rem !important;
+}
+
+/* ========== CARDS Y CONTAINERS ========== */
+
+/* Contenedor principal tipo card */
+.zfcDatagrid-wrapper {
+    background: var(--bs-white) !important;
+    border-radius: var(--bs-border-radius-lg) !important;
+    box-shadow: var(--bs-box-shadow) !important;
+    border: 1px solid var(--bs-border-color-translucent) !important;
+    overflow: hidden !important;
+}
+
+/* Header de la tabla como card-header */
+.zfcDatagrid-header {
+    background: linear-gradient(135deg, var(--bs-primary) 0%, var(--bs-primary-dark, #0056b3) 100%) !important;
+    color: var(--bs-white) !important;
+    padding: 1rem 1.5rem !important;
+    border-bottom: 1px solid var(--bs-border-color) !important;
+}
+
+.zfcDatagrid-header h3 {
+    margin: 0 !important;
+    font-size: 1.25rem !important;
+    font-weight: var(--bs-font-weight-semibold) !important;
+}
+
+/* ========== PAGINATION MEJORADA ========== */
+
+.zfcDatagrid .pagination {
+    margin: 0 !important;
+    padding: 1rem !important;
+    background: var(--bs-light) !important;
+    border-top: 1px solid var(--bs-border-color-translucent) !important;
+    justify-content: center !important;
+}
+
+.zfcDatagrid .pagination .page-link {
+    border-radius: var(--bs-border-radius) !important;
+    margin: 0 0.125rem !important;
+    transition: all 0.15s ease-in-out !important;
+}
+
+.zfcDatagrid .pagination .page-item.active .page-link {
+    background: var(--bs-primary) !important;
+    border-color: var(--bs-primary) !important;
+    box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.25) !important;
+}
+
+/* ========== FILTROS MEJORADOS ========== */
+
+.zfcDatagrid .filter-row {
+    background: var(--bs-light) !important;
+    border-bottom: 1px solid var(--bs-border-color) !important;
+}
+
+.zfcDatagrid .filter-row input,
+.zfcDatagrid .filter-row select {
+    border: 1px solid var(--bs-border-color) !important;
+    border-radius: var(--bs-border-radius-sm) !important;
+    padding: 0.375rem 0.5rem !important;
+    font-size: var(--bs-font-size-sm) !important;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out !important;
+}
+
+.zfcDatagrid .filter-row input:focus,
+.zfcDatagrid .filter-row select:focus {
+    border-color: var(--bs-primary) !important;
+    box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.25) !important;
+    outline: none !important;
+}
+
+/* ========== BOTONES DE ACCIÓN MEJORADOS ========== */
+
+.zfcDatagrid .action-buttons {
+    display: flex !important;
+    gap: 0.25rem !important;
+    justify-content: center !important;
+    flex-wrap: wrap !important;
+}
+
+.zfcDatagrid .btn-action {
+    padding: 0.375rem 0.75rem !important;
+    font-size: 0.875rem !important;
+    border-radius: var(--bs-border-radius-sm) !important;
+    transition: all 0.15s ease-in-out !important;
+    text-decoration: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-width: 2.5rem !important;
+}
+
+.zfcDatagrid .btn-action:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1) !important;
+}
+
+.zfcDatagrid .btn-action i {
+    font-size: 0.875rem !important;
+    margin-right: 0.25rem !important;
+}
+
+/* Colores específicos para botones de acción */
+.zfcDatagrid .btn-view {
+    --bs-btn-color: var(--bs-white);
+    --bs-btn-bg: var(--bs-info);
+    --bs-btn-border-color: var(--bs-info);
+    --bs-btn-hover-color: var(--bs-white);
+    --bs-btn-hover-bg: var(--bs-info-dark, #0dcaf0);
+    --bs-btn-hover-border-color: var(--bs-info-dark, #0dcaf0);
+}
+
+.zfcDatagrid .btn-edit {
+    --bs-btn-color: var(--bs-dark);
+    --bs-btn-bg: var(--bs-warning);
+    --bs-btn-border-color: var(--bs-warning);
+    --bs-btn-hover-color: var(--bs-dark);
+    --bs-btn-hover-bg: var(--bs-warning-dark, #ffc107);
+    --bs-btn-hover-border-color: var(--bs-warning-dark, #ffc107);
+}
+
+.zfcDatagrid .btn-delete {
+    --bs-btn-color: var(--bs-white);
+    --bs-btn-bg: var(--bs-danger);
+    --bs-btn-border-color: var(--bs-danger);
+    --bs-btn-hover-color: var(--bs-white);
+    --bs-btn-hover-bg: var(--bs-danger-dark, #dc3545);
+    --bs-btn-hover-border-color: var(--bs-danger-dark, #dc3545);
+}
+
+/* ========== TOOLTIPS BOOTSTRAP ========== */
+
+.zfcDatagrid [data-bs-toggle="tooltip"] {
+    cursor: pointer !important;
+}
+
+/* ========== RESPONSIVE AVANZADO ========== */
+
+/* Extra small devices (phones, less than 576px) */
+@media (max-width: 575.98px) {
+    .zfcDatagrid .btn-action span {
+        display: none !important;
+    }
+    
+    .zfcDatagrid .btn-action {
+        min-width: 2rem !important;
+        padding: 0.25rem !important;
+    }
+    
+    .zfcDatagrid .btn-action i {
+        margin-right: 0 !important;
+        font-size: 0.75rem !important;
+    }
+}
+
+/* Small devices (landscape phones, 576px and up) */
+@media (min-width: 576px) and (max-width: 767.98px) {
+    .zfcDatagrid table {
+        font-size: var(--bs-font-size-sm) !important;
+    }
+    
+    .zfcDatagrid .btn-action {
+        padding: 0.25rem 0.5rem !important;
+        font-size: 0.75rem !important;
+    }
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .zfcDatagrid .action-buttons {
+        gap: 0.375rem !important;
+    }
+}
+
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) {
+    .zfcDatagrid .btn-action {
+        min-width: 3rem !important;
+    }
+}
+
+/* ========== LOADING STATES ========== */
+
+.zfcDatagrid-loading {
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+.zfcDatagrid-loading::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    background: rgba(var(--bs-white-rgb), 0.8) !important;
+    z-index: 1000 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.zfcDatagrid-loading::after {
+    content: '' !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 2rem !important;
+    height: 2rem !important;
+    border: 0.25rem solid var(--bs-primary-bg-subtle) !important;
+    border-top: 0.25rem solid var(--bs-primary) !important;
+    border-radius: 50% !important;
+    animation: spin 1s linear infinite !important;
+    z-index: 1001 !important;
+}
+
+@keyframes spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* ========== DARK MODE SUPPORT ========== */
+
+[data-bs-theme="dark"] .zfcDatagrid-wrapper {
+    background: var(--bs-dark) !important;
+    border-color: var(--bs-border-color) !important;
+}
+
+[data-bs-theme="dark"] .zfcDatagrid tbody tr {
+    background: var(--bs-dark) !important;
+}
+
+[data-bs-theme="dark"] .zfcDatagrid tbody tr:hover {
+    background: var(--bs-gray-800) !important;
+}
+
+/* ========== ACCESSIBILITY IMPROVEMENTS ========== */
+
+.zfcDatagrid .btn-action:focus {
+    box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.25) !important;
+    outline: none !important;
+}
+
+.zfcDatagrid table {
+    caption-side: top !important;
+}
+
+.zfcDatagrid th {
+    position: relative !important;
+}
+
+.zfcDatagrid th[aria-sort] {
+    cursor: pointer !important;
+}
+
+.zfcDatagrid th[aria-sort]::after {
+    content: '' !important;
+    position: absolute !important;
+    right: 0.5rem !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    width: 0 !important;
+    height: 0 !important;
+    border-left: 0.25rem solid transparent !important;
+    border-right: 0.25rem solid transparent !important;
+    border-bottom: 0.25rem solid currentColor !important;
+    opacity: 0.5 !important;
+}
+
+.zfcDatagrid th[aria-sort="ascending"]::after {
+    border-bottom: none !important;
+    border-top: 0.25rem solid currentColor !important;
+    opacity: 1 !important;
+}
+
+.zfcDatagrid th[aria-sort="descending"]::after {
+    opacity: 1 !important;
+}

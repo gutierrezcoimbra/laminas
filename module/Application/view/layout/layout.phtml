@@ -4,7 +4,7 @@
  */
 ?>
 <?= $this->doctype() ?>
-<html lang="en">
+<html lang="es">
     <head>
         <meta charset="utf-8">
         <?= $this->headTitle('Sistema de Gestión')->setSeparator(' - ')->setAutoEscape(false) ?>
@@ -12,6 +12,9 @@
         <?= $this->headMeta()
             ->appendName('viewport', 'width=device-width, initial-scale=1.0')
             ->appendHttpEquiv('X-UA-Compatible', 'IE=edge')
+            ->appendName('language', 'es')
+            ->appendName('description', 'Sistema de Gestión de Usuarios y CVs')
+            ->appendHttpEquiv('Content-Language', 'es')
         ?>
 
         <!-- Le styles -->
@@ -85,6 +88,7 @@
             </footer>
         </div>
         <?= $this->inlineScript()
-            ->prependFile($this->basePath('js/bootstrap.min.js')) ?>
+            ->prependFile($this->basePath('js/bootstrap.min.js'))
+            ->prependFile('https://code.jquery.com/jquery-3.6.0.min.js') ?>
     </body>
 </html>

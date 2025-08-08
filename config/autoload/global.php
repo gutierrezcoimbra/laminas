@@ -13,5 +13,20 @@
  */
 
 return [
-    // ...
+    // Configuración de idioma español
+    'translator' => [
+        'locale' => 'es_ES',
+        'translation_file_patterns' => [
+            [
+                'type'     => 'gettext',
+                'base_dir' => getcwd() . '/data/language',
+                'pattern'  => '%s.mo',
+            ],
+        ],
+    ],
+    
+    // Configuración de zona horaria
+    'php_settings' => [
+        'date.timezone' => 'Europe/Madrid',
+    ],
 ];

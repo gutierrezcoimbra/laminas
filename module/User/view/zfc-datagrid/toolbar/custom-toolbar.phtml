@@ -1,0 +1,194 @@
+<?php
+/**
+ * Toolbar personalizada para el datagrid de usuarios
+ * Incluye botón para agregar nuevo usuario con componentes Bootstrap mejorados
+ */
+?>
+
+<!-- Toolbar mejorada con Bootstrap -->
+<div class="container-fluid px-0 mb-4">
+    <div class="card shadow-sm border-0">
+        <div class="card-body py-3">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <!-- Botón para agregar nuevo usuario con badge de contador -->
+                    <div class="btn-toolbar" role="toolbar">
+                        <div class="btn-group me-3" role="group">
+                            <a href="<?= $this->url('user/add') ?>" class="btn btn-primary btn-lg shadow-sm">
+                                <i class="fas fa-user-plus me-2"></i>
+                                <span class="fw-semibold">Nuevo Usuario</span>
+                            </a>
+                        </div>
+                        
+                        <!-- Badge con total de usuarios -->
+                        <div class="d-flex align-items-center">
+                            <span class="badge bg-info fs-6 px-3 py-2">
+                                <i class="fas fa-users me-1"></i>
+                                <span id="total-users-count">Total: --</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="d-flex justify-content-end align-items-center">
+                        <!-- Botones de exportación mejorados -->
+                        <?php if (isset($exportButtons) && !empty($exportButtons)): ?>
+                            <div class="btn-group me-3" role="group">
+                                <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                                    <i class="fas fa-download me-1"></i> Exportar
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <?= $exportButtons ?>
+                                </ul>
+                            </div>
+                        <?php endif; ?>
+                        
+                        <!-- Botón de actualizar -->
+                        <button type="button" class="btn btn-outline-primary" onclick="location.reload()" title="Actualizar datos">
+                            <i class="fas fa-sync-alt"></i>
+                            <span class="d-none d-sm-inline ms-1">Actualizar</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Alert informativo opcional -->
+<div class="alert alert-info alert-dismissible fade show d-none" role="alert" id="datagrid-info">
+    <i class="fas fa-info-circle me-2"></i>
+    <strong>Información:</strong> <span id="alert-message">Datos cargados correctamente.</span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+
+<style>
+/* Estilos adicionales para la toolbar mejorada */
+.card {
+    border-radius: 12px !important;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%) !important;
+}
+
+.btn-primary.btn-lg {
+    border-radius: 8px !important;
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%) !important;
+    border: none !important;
+    transition: all 0.3s ease !important;
+}
+
+.btn-primary.btn-lg:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 25px rgba(0,123,255,0.3) !important;
+}
+
+.badge.bg-info {
+    background: linear-gradient(135deg, #17a2b8 0%, #138496 100%) !important;
+    border-radius: 20px !important;
+    animation: pulse-subtle 2s infinite !important;
+}
+
+@keyframes pulse-subtle {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.btn-outline-primary, .btn-outline-secondary {
+    border-radius: 6px !important;
+    transition: all 0.2s ease !important;
+}
+
+.btn-outline-primary:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(0,123,255,0.2) !important;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Función para corregir enlaces de botones
+    function fixActionButtons() {
+        const rows = document.querySelectorAll('tbody tr');
+        rows.forEach(function(row) {
+            const firstCell = row.querySelector('td:first-child');
+            if (firstCell) {
+                const userId = firstCell.textContent.trim();
+                
+                // Corregir enlaces si hay un ID válido
+                if (userId && /^\d+$/.test(userId)) {
+                    const links = row.querySelectorAll('a[href*=":id"]');
+                    links.forEach(function(link) {
+                        link.href = link.href.replace(':id', userId);
+                    });
+                }
+            }
+        });
+    }
+    
+    // Función para contar usuarios y actualizar badge
+    function updateUserCount() {
+        const rows = document.querySelectorAll('tbody tr');
+        const count = rows.length;
+        const countElement = document.getElementById('total-users-count');
+        if (countElement) {
+            countElement.textContent = `Total: ${count} usuario${count !== 1 ? 's' : ''}`;
+        }
+    }
+    
+    // Función para mostrar alertas informativas
+    function showInfo(message, type = 'info') {
+        const alertElement = document.getElementById('datagrid-info');
+        const messageElement = document.getElementById('alert-message');
+        
+        if (alertElement && messageElement) {
+            alertElement.className = `alert alert-${type} alert-dismissible fade show`;
+            messageElement.textContent = message;
+            alertElement.classList.remove('d-none');
+            
+            // Auto-ocultar después de 3 segundos
+            setTimeout(() => {
+                alertElement.classList.add('d-none');
+            }, 3000);
+        }
+    }
+    
+    // Ejecutar funciones iniciales
+    fixActionButtons();
+    updateUserCount();
+    
+    // Mostrar mensaje de carga exitosa
+    setTimeout(() => {
+        showInfo('Datos de usuarios cargados correctamente.');
+    }, 500);
+    
+    // También ejecutar después de un pequeño retraso por si el contenido se carga dinámicamente
+    setTimeout(() => {
+        fixActionButtons();
+        updateUserCount();
+    }, 1000);
+    
+    // Inicializar tooltips de Bootstrap
+    function initializeTooltips() {
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    }
+    
+    // Observar cambios en la tabla para actualizar el contador y reinicializar tooltips
+    const observer = new MutationObserver(() => {
+        updateUserCount();
+        fixActionButtons();
+        setTimeout(initializeTooltips, 100); // Reinicializar tooltips después de cambios
+    });
+    
+    const tableContainer = document.querySelector('.zfcDatagrid-container');
+    if (tableContainer) {
+        observer.observe(tableContainer, { childList: true, subtree: true });
+    }
+    
+    // Inicializar tooltips al cargar
+    setTimeout(initializeTooltips, 1500);
+});
+</script>
+

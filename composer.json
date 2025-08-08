@@ -30,7 +30,8 @@
         "laminas/laminas-session": "2.9.1",
         "laminas/laminas-view": "2.12.0",
         "doctrine/doctrine-laminas-hydrator": "^2.0",
-        "zfc-datagrid/zfc-datagrid": "2.1.0"
+        "zfc-datagrid/zfc-datagrid": "2.1.0",
+        "laminas/laminas-serializer": "^2.18"
     },
     "autoload": {
         "psr-4": {
