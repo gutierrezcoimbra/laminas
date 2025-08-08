@@ -46,6 +46,32 @@ if ($form->getMessages()) {
             'element' => $form->get('contenido'),
             'errors' => $errors
         ]); ?>
+        
+        <!-- Pretensión Salarial -->
+        <div class="form-group mb-4">
+            <label for="pretension_salarial" class="form-label">
+                <i class="fas fa-dollar-sign text-success me-2"></i>
+                Pretensión Salarial (USD)
+            </label>
+            <div class="input-group">
+                <span class="input-group-text bg-success text-white">
+                    <i class="fas fa-dollar-sign"></i>
+                </span>
+                <?= $this->formElement($form->get('pretension_salarial')); ?>
+                <span class="input-group-text">.00</span>
+            </div>
+            <?php if (isset($errors['pretension_salarial'])): ?>
+                <div class="text-danger small mt-1">
+                    <?php foreach ($errors['pretension_salarial'] as $error): ?>
+                        <div><?= $this->escapeHtml($error) ?></div>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+            <div class="form-text">
+                <i class="fas fa-info-circle me-1"></i>
+                Ingrese su expectativa salarial mensual en dólares americanos
+            </div>
+        </div>
     </div>
     
     <!-- Skills Section -->

@@ -56,7 +56,7 @@ $this->headTitle($title);
                                                 <i class="fas fa-file-text"></i>
                                             </div>
                                         </div>
-                                        <div class="col-md-3">
+                                        <div class="col-md-2">
                                             <div class="cv-info">
                                                 <h6 class="cv-title mb-1"><?= $this->escapeHtml($cv->titulo) ?></h6>
                                                 <small class="cv-id text-muted">ID: <?= $this->escapeHtml($cv->id) ?></small>
@@ -91,13 +91,31 @@ $this->headTitle($title);
                                             </div>
                                         </div>
                                         <div class="col-md-2">
+                                            <div class="cv-salary">
+                                                <?php if (!empty($cv->pretension_salarial)): ?>
+                                                    <div class="salary-info">
+                                                        <i class="fas fa-dollar-sign text-success me-1"></i>
+                                                        <span class="salary-amount text-success fw-bold">
+                                                            <?= number_format($cv->pretension_salarial, 2, '.', ',') ?>
+                                                        </span>
+                                                    </div>
+                                                    <small class="text-muted">USD/mes</small>
+                                                <?php else: ?>
+                                                    <div class="no-salary">
+                                                        <i class="fas fa-minus-circle text-muted me-1"></i>
+                                                        <small class="text-muted">Sin especificar</small>
+                                                    </div>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-1">
                                             <div class="cv-skills">
                                                 <?php if (!empty($cv->skills)): ?>
                                                     <h6 class="skills-title">
                                                         <i class="fas fa-tools text-muted me-1"></i>Skills
                                                     </h6>
                                                     <div class="skills-container-cards">
-                                                        <?php foreach (array_slice($cv->skills, 0, 4) as $skill): ?>
+                                                        <?php foreach (array_slice($cv->skills, 0, 2) as $skill): ?>
                                                             <?php
                                                             $badgeClass = match($skill['nivel']) {
                                                                 'basico' => 'badge-secondary',
@@ -122,10 +140,10 @@ $this->headTitle($title);
                                                                 <?= $this->escapeHtml($skill['nombre']) ?>
                                                             </span>
                                                         <?php endforeach; ?>
-                                                        <?php if (count($cv->skills) > 4): ?>
+                                                        <?php if (count($cv->skills) > 2): ?>
                                                             <span class="badge badge-light skill-badge-card" 
                                                                   style="background-color: #f8f9fa !important; color: #6c757d !important; border: 1px solid #dee2e6 !important;">
-                                                                +<?= count($cv->skills) - 4 ?>
+                                                                +<?= count($cv->skills) - 2 ?>
                                                             </span>
                                                         <?php endif; ?>
                                                     </div>

@@ -40,6 +40,7 @@ CREATE TABLE `cvs` (
   `titulo` varchar(150) NOT NULL,
   `resumen` text NULL,
   `contenido` mediumtext NULL,
+  `pretension_salarial` DECIMAL(19,2) NULL DEFAULT NULL ,
   `deletedAt` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0=Activo, 1=Borrado',
   `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

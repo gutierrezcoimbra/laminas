@@ -153,3 +153,48 @@ span.badge.badge-light.skill-badge-card {
     max-width: 180px;
     overflow: hidden;
 }
+
+/* Salary Display Styles */
+.cv-salary {
+    text-align: center;
+    padding: 10px 5px;
+}
+
+.salary-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2px;
+}
+
+.salary-amount {
+    font-weight: 600;
+    font-size: 0.9em;
+}
+
+.no-salary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.7;
+}
+
+/* Salary form input group */
+.input-group .form-control[type="number"] {
+    text-align: right;
+    font-weight: 500;
+}
+
+.input-group-text.bg-success {
+    background-color: #28a745 !important;
+}
+
+.input-group-text.bg-success i {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}

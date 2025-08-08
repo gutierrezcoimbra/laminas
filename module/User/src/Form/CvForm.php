@@ -91,6 +91,23 @@ class CvForm extends Form
             ],
         ]);
         
+        // Pretensión Salarial
+        $this->add([
+            'name' => 'pretension_salarial',
+            'type' => Element\Number::class,
+            'options' => [
+                'label' => 'Pretensión Salarial (USD)',
+                'label_attributes' => ['class' => 'control-label'],
+            ],
+            'attributes' => [
+                'class' => 'form-control',
+                'placeholder' => 'Ej: 2500.00',
+                'step' => '0.01',
+                'min' => '0',
+                'max' => '999999999.99',
+            ],
+        ]);
+        
         // Skills - Campo dinámico para múltiples skills
         $this->add([
             'name' => 'skills',
@@ -264,6 +281,45 @@ class CvForm extends Form
                         'max' => 10000,
                         'messages' => [
                             'stringLengthTooLong' => 'El contenido no puede exceder 10,000 caracteres',
+                        ],
+                    ],
+                ],
+            ],
+        ]);
+        
+        // Pretensión Salarial
+        $inputFilter->add([
+            'name' => 'pretension_salarial',
+            'required' => false,
+            'filters' => [
+                ['name' => 'StringTrim'],
+                [
+                    'name' => 'Callback',
+                    'options' => [
+                        'callback' => function ($value) {
+                            return $value === '' ? null : (float) $value;
+                        },
+                    ],
+                ],
+            ],
+            'validators' => [
+                [
+                    'name' => 'Regex',
+                    'options' => [
+                        'pattern' => '/^(\d{1,17}(\.\d{1,2})?)?$/',
+                        'messages' => [
+                            'regexNotMatch' => 'La pretensión salarial debe ser un número válido con máximo 2 decimales',
+                        ],
+                    ],
+                ],
+                [
+                    'name' => 'Between',
+                    'options' => [
+                        'min' => 0,
+                        'max' => 999999999.99,
+                        'inclusive' => true,
+                        'messages' => [
+                            'notBetween' => 'La pretensión salarial debe estar entre 0 y 999,999,999.99',
                         ],
                     ],
                 ],
