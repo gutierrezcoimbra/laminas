@@ -189,7 +189,8 @@ return [
                 $cvTable = $container->get(\User\Model\CvTable::class);
                 $userTable = $container->get(\User\Model\UserTable::class);
                 $skillTable = $container->get(\User\Model\SkillTable::class);
-                return new \User\Controller\CvController($cvTable, $userTable, $skillTable);
+                $cacheService = $container->get(\User\Service\CvCacheService::class);
+                return new \User\Controller\CvController($cvTable, $userTable, $skillTable, $cacheService);
             },
         ],
     ],
@@ -230,6 +231,16 @@ return [
             \User\Model\SkillTable::class => function($container) {
                 $tableGateway = $container->get(\User\Model\SkillTableGateway::class);
                 return new \User\Model\SkillTable($tableGateway);
+            },
+            // Factory para CvCacheService
+            \User\Service\CvCacheService::class => function($container) {
+                $config = $container->get('config');
+                return new \User\Service\CvCacheService($config);
+            },
+            // Factory para CvCacheListener
+            \User\Listener\CvCacheListener::class => function($container) {
+                $cacheService = $container->get(\User\Service\CvCacheService::class);
+                return new \User\Listener\CvCacheListener($cacheService);
             },
         ],
     ],

@@ -19,18 +19,21 @@ use ZfcDatagrid\Filter;
 use Laminas\Db\Sql\Sql;
 use Laminas\Db\Sql\Select;
 use Laminas\Db\Sql\Expression;
+use User\Service\CvCacheService;
 
 class CvController extends AbstractActionController
 {
     private $cvTable;
     private $userTable;
     private $skillTable;
+    private $cacheService;
 
-    public function __construct(CvTable $cvTable, UserTable $userTable, $skillTable = null)
+    public function __construct(CvTable $cvTable, UserTable $userTable, $skillTable = null, CvCacheService $cacheService = null)
     {
         $this->cvTable = $cvTable;
         $this->userTable = $userTable;
         $this->skillTable = $skillTable;
+        $this->cacheService = $cacheService;
     }
 
     public function indexAction()
@@ -228,6 +231,18 @@ class CvController extends AbstractActionController
             
             try {
                 $this->cvTable->saveCv($cv);
+                
+                // Invalidar cache y marcar para una sola visita
+                if ($this->cacheService) {
+                    // Invalidar cache
+                    $this->cacheService->invalidateCvCache($cvId);
+                    
+                    // Marcar en sesión que este CV debe ignorar cache existente SOLO en la próxima visita
+                    $session = new \Laminas\Session\Container('cv_cache_control');
+                    $session->ignore_cache_once = $session->ignore_cache_once ?? [];
+                    $session->ignore_cache_once[$cvId] = true; // Solo una vez
+                }
+                
                 $this->flashMessenger()->addSuccessMessage('CV actualizado exitosamente');
                 return $this->redirect()->toRoute('cvs');
             } catch (\Exception $e) {
@@ -261,6 +276,12 @@ class CvController extends AbstractActionController
                 
                 if ($del === 'Sí') {
                     $this->cvTable->deleteCv($cvId);
+                    
+                    // Invalidar cache del CV eliminado
+                    if ($this->cacheService) {
+                        $this->cacheService->invalidateCvCache($cvId);
+                    }
+                    
                     $this->flashMessenger()->addSuccessMessage('CV eliminado correctamente');
                 } else {
                     $this->flashMessenger()->addInfoMessage('Eliminación cancelada');

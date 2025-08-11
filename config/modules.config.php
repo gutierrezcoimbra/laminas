@@ -13,6 +13,7 @@ return [
     'Laminas\Filter',
     'Laminas\Mvc\Plugin\FlashMessenger',
     'Laminas\Session',
+    'Laminas\Cache',
     'Laminas\Db',
     'Laminas\Router',
     'Laminas\Validator',
