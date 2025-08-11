@@ -458,4 +458,63 @@ class CvController extends AbstractActionController
         ];
         $datagrid->setToolbarTemplateVariables($toolbarVariables);
     }
+
+    /**
+     * Acción AJAX para búsqueda avanzada de skills
+     * Responde con JSON para autocompletado dinámico
+     */
+    public function searchSkillsAction()
+    {
+        $request = $this->getRequest();
+        
+        // Verificar que sea una petición AJAX
+        if (!$request->isXmlHttpRequest()) {
+            return $this->getResponse()->setStatusCode(400);
+        }
+        
+        // Obtener término de búsqueda
+        $searchTerm = $request->getQuery('q', '');
+        $limit = (int) $request->getQuery('limit', 20);
+        
+        // Validar límite
+        if ($limit > 50) {
+            $limit = 50;
+        }
+        
+        $results = [];
+        
+        if (!empty($searchTerm) && $this->skillTable) {
+            try {
+                // Usar búsqueda FULLTEXT
+                $skills = $this->skillTable->searchSkillsFulltext($searchTerm, $limit);
+                
+                // Formatear resultados para Select2
+                foreach ($skills as $skill) {
+                    $results[] = [
+                        'id' => $skill['id'],
+                        'text' => $skill['nombre'],
+                        'score' => $skill['score'] ?? 1.0
+                    ];
+                }
+            } catch (\Exception $e) {
+                // Log error pero no exponer detalles al cliente
+                error_log('Error en búsqueda de skills: ' . $e->getMessage());
+                $results = [];
+            }
+        }
+        
+        // Respuesta JSON compatible con Select2
+        $response = [
+            'results' => $results,
+            'pagination' => [
+                'more' => count($results) >= $limit
+            ]
+        ];
+        
+        // Configurar respuesta JSON
+        $jsonResponse = new \Laminas\View\Model\JsonModel($response);
+        $jsonResponse->setTerminal(true);
+        
+        return $jsonResponse;
+    }
 }

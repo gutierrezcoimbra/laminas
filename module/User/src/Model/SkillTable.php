@@ -97,5 +97,102 @@ class SkillTable
         
         return $skills;
     }
+
+    /**
+     * Búsqueda avanzada de skills usando FULLTEXT MATCH AGAINST
+     * @param string $searchTerm Términos de búsqueda separados por espacios
+     * @param int $limit Límite de resultados (default: 20)
+     * @return array Array de skills con score de relevancia
+     */
+    public function searchSkillsFulltext($searchTerm, $limit = 20)
+    {
+        $adapter = $this->tableGateway->getAdapter();
+        
+        // Limpiar y preparar términos de búsqueda
+        $searchTerm = trim($searchTerm);
+        if (empty($searchTerm)) {
+            return [];
+        }
+        
+        // Convertir términos a formato Boolean Mode (+término1 +término2)
+        $terms = explode(' ', $searchTerm);
+        $booleanTerms = [];
+        foreach ($terms as $term) {
+            $term = trim($term);
+            if (!empty($term)) {
+                $booleanTerms[] = '+' . $term . '*'; // Agregar wildcard para búsqueda parcial
+            }
+        }
+        
+        if (empty($booleanTerms)) {
+            return [];
+        }
+        
+        $booleanQuery = implode(' ', $booleanTerms);
+        
+        $sql = "SELECT 
+                    id, 
+                    nombre,
+                    MATCH (nombre) AGAINST (? IN BOOLEAN MODE) AS score
+                FROM skills 
+                WHERE deletedAt = 0 
+                AND MATCH (nombre) AGAINST (? IN BOOLEAN MODE) > 0
+                ORDER BY score DESC, nombre ASC
+                LIMIT ?";
+        
+        try {
+            $statement = $adapter->createStatement($sql);
+            $result = $statement->execute([$booleanQuery, $booleanQuery, (int) $limit]);
+            
+            $skills = [];
+            foreach ($result as $row) {
+                $skills[] = [
+                    'id' => (int) $row['id'],
+                    'nombre' => $row['nombre'],
+                    'score' => (float) $row['score']
+                ];
+            }
+            
+            return $skills;
+        } catch (\Exception $e) {
+            // En caso de error con FULLTEXT, hacer búsqueda LIKE como fallback
+            return $this->searchSkillsLike($searchTerm, $limit);
+        }
+    }
+
+    /**
+     * Búsqueda de skills usando LIKE como fallback
+     * @param string $searchTerm Término de búsqueda
+     * @param int $limit Límite de resultados
+     * @return array Array de skills
+     */
+    private function searchSkillsLike($searchTerm, $limit = 20)
+    {
+        $adapter = $this->tableGateway->getAdapter();
+        
+        $sql = "SELECT 
+                    id, 
+                    nombre,
+                    1.0 AS score
+                FROM skills 
+                WHERE deletedAt = 0 
+                AND nombre LIKE ?
+                ORDER BY nombre ASC
+                LIMIT ?";
+        
+        $statement = $adapter->createStatement($sql);
+        $result = $statement->execute(['%' . $searchTerm . '%', (int) $limit]);
+        
+        $skills = [];
+        foreach ($result as $row) {
+            $skills[] = [
+                'id' => (int) $row['id'],
+                'nombre' => $row['nombre'],
+                'score' => 1.0
+            ];
+        }
+        
+        return $skills;
+    }
 }
 

@@ -89,10 +89,13 @@ if ($form->getMessages()) {
             <div class="add-skill-section mb-4">
                 <div class="row align-items-end">
                     <div class="col-md-6">
-                        <label for="skill-select2" class="form-label">Seleccionar Habilidad:</label>
+                        <label for="skill-select2" class="form-label">
+                            <i class="fas fa-search me-1"></i>Buscar Habilidad:
+                        </label>
                         <select id="skill-select2" class="form-control" style="width: 100%;">
-                            <option value="">-- Seleccione una habilidad --</option>
+                            <option value="">-- Escriba para buscar (mínimo 2 caracteres) --</option>
                         </select>
+                        
                     </div>
                     <div class="col-md-3">
                         <label for="skill-level-new" class="form-label">Nivel:</label>
@@ -375,6 +378,48 @@ select.form-control {
     border-color: #28a745;
     box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
 }
+
+/* Loading indicator for Select2 */
+.select2-loading {
+    position: relative;
+}
+
+.select2-loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 30px;
+    width: 16px;
+    height: 16px;
+    margin-top: -8px;
+    border: 2px solid #28a745;
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    z-index: 1000;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Mejorar la apariencia de los resultados */
+.select2-results__option {
+    padding: 8px 12px;
+}
+
+.select2-results__option--highlighted {
+    background-color: #28a745 !important;
+    color: white !important;
+}
+
+/* Estilo para mensajes de estado */
+.select2-results__message {
+    padding: 10px 12px;
+    font-style: italic;
+    color: #6c757d;
+}
 </style>
 
 <script>
@@ -447,14 +492,80 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function setupSkillsInterface() {
-        // Initialize Select2
+        // Initialize Select2 with AJAX
         $('#skill-select2').select2({
-            placeholder: '-- Seleccione una habilidad --',
+            placeholder: '-- Busque y seleccione una habilidad --',
             allowClear: true,
-            data: window.availableSkills.map(skill => ({
-                id: skill.id,
-                text: skill.nombre
-            }))
+            minimumInputLength: 2, // Mínimo 2 caracteres para buscar
+            ajax: {
+                url: '/cvs/search-skills',
+                dataType: 'json',
+                delay: 300, // Delay de 300ms para evitar demasiadas peticiones
+                data: function (params) {
+                    return {
+                        q: params.term, // término de búsqueda
+                        limit: 20 // límite de resultados
+                    };
+                },
+                processResults: function (data) {
+                    if (!data || !data.results) {
+                        return { results: [] };
+                    }
+                    return {
+                        results: data.results.map(function(item) {
+                            return {
+                                id: item.id,
+                                text: item.text,
+                                score: item.score
+                            };
+                        }),
+                        pagination: data.pagination
+                    };
+                },
+                cache: true, // Cache de resultados
+                transport: function (params, success, failure) {
+                    // Mostrar indicador de carga
+                    $('#skill-select2').addClass('select2-loading');
+                    
+                    var request = $.ajax(params);
+                    
+                    request.then(function(data) {
+                        // Ocultar indicador de carga
+                        $('#skill-select2').removeClass('select2-loading');
+                        success(data);
+                    });
+                    
+                    request.fail(function(jqXHR, textStatus, errorThrown) {
+                        // Ocultar indicador de carga
+                        $('#skill-select2').removeClass('select2-loading');
+                        console.error('Error en búsqueda de skills:', textStatus, errorThrown);
+                        failure();
+                    });
+                    
+                    return request;
+                }
+            },
+            // Mensajes personalizados
+            language: {
+                inputTooShort: function(args) {
+                    return 'Escriba al menos ' + args.minimum + ' caracteres para buscar';
+                },
+                searching: function() {
+                    return 'Buscando habilidades...';
+                },
+                noResults: function() {
+                    return 'No se encontraron habilidades que coincidan con su búsqueda';
+                },
+                errorLoading: function() {
+                    return 'Error al cargar los resultados';
+                }
+            },
+            // Fallback: cargar skills iniciales si están disponibles
+            data: window.availableSkills && window.availableSkills.length > 0 ? 
+                window.availableSkills.map(skill => ({
+                    id: skill.id,
+                    text: skill.nombre
+                })) : []
         });
         
         // Load existing skills

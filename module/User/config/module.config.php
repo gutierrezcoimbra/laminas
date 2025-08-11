@@ -174,6 +174,16 @@ return [
                             ],
                         ],
                     ],
+                    'search-skills' => [
+                        'type' => Literal::class,
+                        'options' => [
+                            'route' => '/search-skills',
+                            'defaults' => [
+                                'controller' => Controller\CvController::class,
+                                'action' => 'searchSkills',
+                            ],
+                        ],
+                    ],
                 ],
             ],
         ],
