@@ -16,6 +16,11 @@ class CvTable
         $this->tableGateway = $tableGateway;
     }
 
+    public function getTableGateway()
+    {
+        return $this->tableGateway;
+    }
+
     public function fetchAll()
     {
         return $this->tableGateway->select(['deletedAt' => 0]);

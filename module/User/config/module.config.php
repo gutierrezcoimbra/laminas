@@ -71,6 +71,16 @@ return [
                             ],
                         ],
                     ],
+                    'get-names' => [
+                        'type' => Literal::class,
+                        'options' => [
+                            'route' => '/get-names',
+                            'defaults' => [
+                                'controller' => Controller\UserController::class,
+                                'action' => 'getNames',
+                            ],
+                        ],
+                    ],
                 ],
             ],
             // Rutas para CVs individuales (desde perfil de usuario)
@@ -239,6 +249,7 @@ return [
             'cv/partials/cv-form' => __DIR__ . '/../view/cv/partials/cv-form.phtml',
             'view-helpers/cv-display' => __DIR__ . '/../view/view-helpers/cv-display.phtml',
             'zfc-datagrid/toolbar/custom-toolbar' => __DIR__ . '/../view/zfc-datagrid/toolbar/custom-toolbar.phtml',
+            'zfc-datagrid/toolbar/cv-toolbar' => __DIR__ . '/../view/zfc-datagrid/toolbar/cv-toolbar.phtml',
         ],
     ],
     'view_helpers' => [

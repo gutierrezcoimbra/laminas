@@ -8,6 +8,17 @@ use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
 use User\Model\CvTable;
 use User\Model\UserTable;
+use ZfcDatagrid\Datagrid;
+use ZfcDatagrid\Column;
+use ZfcDatagrid\Column\Select as ColumnSelect;
+use ZfcDatagrid\Column\Action as ColumnAction;
+use ZfcDatagrid\Column\Action\Button as ActionButton;
+use ZfcDatagrid\Column\Type;
+use ZfcDatagrid\Column\Style;
+use ZfcDatagrid\Filter;
+use Laminas\Db\Sql\Sql;
+use Laminas\Db\Sql\Select;
+use Laminas\Db\Sql\Expression;
 
 class CvController extends AbstractActionController
 {
@@ -64,19 +75,61 @@ class CvController extends AbstractActionController
         }
     }
 
-    // Nuevo método para vista general de todos los CVs
+    // Nuevo método para vista general de todos los CVs usando ZfcDatagrid
     public function allAction()
     {
-        try {
-            $allCvs = $this->cvTable->getAllCvsWithUsers();
-            
-            return new ViewModel([
-                'cvs' => $allCvs,
-            ]);
-        } catch (\Exception $e) {
-            $this->flashMessenger()->addErrorMessage('Error al cargar los CVs');
-            return $this->redirect()->toRoute('user');
-        }
+        // Configurar localización en español
+        setlocale(LC_TIME, 'es_ES.UTF-8', 'es_ES', 'Spanish_Spain', 'spanish');
+        
+        // Agregar CSS personalizado mejorado con Bootstrap
+        $viewHelperManager = $this->getEvent()->getApplication()->getServiceManager()
+             ->get('ViewHelperManager');
+             
+        // CSS base optimizado con Bootstrap
+        $viewHelperManager->get('headLink')
+             ->appendStylesheet('/css/datagrid-simple.css');
+             
+        // CSS avanzado con componentes Bootstrap
+        $viewHelperManager->get('headLink')
+             ->appendStylesheet('/css/datagrid-bootstrap-enhanced.css');
+             
+        // Asegurar que FontAwesome esté disponible para los iconos
+        $viewHelperManager->get('headLink')
+             ->appendStylesheet('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
+             
+        // Agregar JavaScript de Bootstrap para componentes interactivos
+        $viewHelperManager->get('headScript')
+             ->appendFile('/js/bootstrap.min.js')
+             ->appendFile('/js/datagrid-bootstrap.js');
+             
+        // Obtener instancia del datagrid desde el ServiceManager
+        $serviceManager = $this->getEvent()->getApplication()->getServiceManager();
+        $datagrid = $serviceManager->get(Datagrid::class);
+        $datagrid->setTitle('Gestión de CVs');
+        $datagrid->setDefaultItemsPerPage(25);
+        
+        // Configurar la fuente de datos usando Laminas\Db\Sql\Select
+        $adapter = $this->cvTable->getTableGateway()->getAdapter();
+        $sql = new Sql($adapter);
+        $select = $sql->select();
+        
+        // Usar la vista personalizada para evitar JOINs complejos y IDs ambiguos
+        $select->from('cv_datagrid_view')
+               ->order(['createdAt DESC']);
+        
+        $datagrid->setDataSource($select, $adapter);
+        
+        // Configurar columnas
+        $this->configureCvColumns($datagrid);
+        
+        // Configurar acciones
+        $this->configureCvActions($datagrid);
+        
+        // Agregar botón para crear nuevo CV
+        $this->configureCvToolbar($datagrid);
+        
+        // Renderizar y obtener la respuesta del datagrid
+        return $datagrid->getResponse();
     }
 
     // Vista general de CV individual (desde /cvs)
@@ -274,5 +327,114 @@ class CvController extends AbstractActionController
                 'form' => $form,
             ]);
         }
+    }
+
+    private function configureCvColumns(Datagrid $datagrid)
+    {
+        // Columna ID (oculta pero necesaria para los botones de acción)
+        $colId = new ColumnSelect('cv_id');
+        $colId->setIdentity(true);
+        $colId->setLabel('ID');
+        $colId->setWidth(5);
+        $colId->setType(new Type\Number());
+        $datagrid->addColumn($colId);
+
+       
+
+        // Columna Usuario (nombre completo + email en una sola columna)
+        $colUsuario = new ColumnSelect('user_info_combined');
+        $colUsuario->setLabel('Usuario');
+        $colUsuario->setWidth(18); // Reducido de 22 a 18
+        $colUsuario->setFilterDefaultOperation(Filter::LIKE);
+        $datagrid->addColumn($colUsuario);
+
+         // Columna Título del CV
+         $colTitulo = new ColumnSelect('titulo');
+         $colTitulo->setLabel('Título del CV');
+         $colTitulo->setWidth(16); // Reducido de 20 a 16
+         $colTitulo->setSortDefault(1, 'ASC');
+         $colTitulo->setFilterDefaultOperation(Filter::LIKE);
+         $datagrid->addColumn($colTitulo);
+         
+        // Columna Skills con niveles (desde la vista)
+        $colSkills = new ColumnSelect('skills_with_levels');
+        $colSkills->setLabel('Habilidades');
+        $colSkills->setWidth(12); // Reducido de 18 a 12
+        $colSkills->setFilterDefaultOperation(Filter::LIKE);
+        $datagrid->addColumn($colSkills);
+
+
+        // Columna Resumen (con más espacio)
+        $colResumen = new ColumnSelect('resumen');
+        $colResumen->setLabel('Resumen');
+        $colResumen->setWidth(25); // Reducido de 32 a 25
+        $colResumen->setFilterDefaultOperation(Filter::LIKE);
+        $datagrid->addColumn($colResumen);
+
+        // Columna Pretensión Salarial
+        $colSalario = new ColumnSelect('pretension_salarial');
+        $colSalario->setLabel('Salario');
+        $colSalario->setWidth(10);
+        $colSalario->setType(new Type\Number());
+        
+        $datagrid->addColumn($colSalario);
+
+        // Columna Fecha de Creación - REMOVIDA según solicitud
+    }
+
+    private function configureCvActions(Datagrid $datagrid)
+    {
+        // Crear columna de acciones
+        $actionColumn = new ColumnAction();
+        $actionColumn->setLabel('Acciones');
+        $actionColumn->setWidth(39); // Aumentado para que los 3 botones (Ver, Editar, Eliminar) entren en una línea
+        
+        // Acción Ver - Mejorada con Bootstrap
+        $actionView = new ActionButton();
+        $actionView->setLabel('<i class="fas fa-eye"></i> <span class="d-none d-md-inline">Ver</span>');
+        $actionView->setLink('/cvs/view/:cv_id');
+        $actionView->setAttribute('class', 'btn btn-action btn-view btn-sm');
+        $actionView->setAttribute('title', 'Ver detalles del CV');
+        $actionView->setAttribute('data-bs-toggle', 'tooltip');
+        $actionView->setAttribute('data-bs-placement', 'top');
+        $actionColumn->addAction($actionView);
+
+        // Acción Editar - Mejorada con Bootstrap
+        $actionEdit = new ActionButton();
+        $actionEdit->setLabel('<i class="fas fa-edit"></i> <span class="d-none d-md-inline">Editar</span>');
+        $actionEdit->setLink('/cvs/edit/:cv_id');
+        $actionEdit->setAttribute('class', 'btn btn-action btn-edit btn-sm');
+        $actionEdit->setAttribute('title', 'Editar información del CV');
+        $actionEdit->setAttribute('data-bs-toggle', 'tooltip');
+        $actionEdit->setAttribute('data-bs-placement', 'top');
+        $actionColumn->addAction($actionEdit);
+
+        // Acción Eliminar - Mejorada con Bootstrap
+        $actionDelete = new ActionButton();
+        $actionDelete->setLabel('<i class="fas fa-trash"></i> <span class="d-none d-md-inline">Eliminar</span>');
+        $actionDelete->setLink('/cvs/delete/:cv_id');
+        $actionDelete->setAttribute('class', 'btn btn-action btn-delete btn-sm');
+        $actionDelete->setAttribute('title', 'Eliminar CV permanentemente');
+        $actionDelete->setAttribute('data-bs-toggle', 'tooltip');
+        $actionDelete->setAttribute('data-bs-placement', 'top');
+        $actionDelete->setAttribute('onclick', 'return confirm("¿Está seguro de que desea eliminar este CV? Esta acción no se puede deshacer.")');
+        $actionColumn->addAction($actionDelete);
+        
+        // Agregar la columna de acciones al datagrid
+        $datagrid->addColumn($actionColumn);
+    }
+
+    private function configureCvToolbar(Datagrid $datagrid)
+    {
+        // Configurar plantilla personalizada para la toolbar
+        $datagrid->setToolbarTemplate('zfc-datagrid/toolbar/cv-toolbar');
+        
+        // Pasar variables adicionales a la plantilla si es necesario
+        $toolbarVariables = [
+            'addCvUrl' => $this->url()->fromRoute('cvs/add'),
+            'userManagementUrl' => $this->url()->fromRoute('user'),
+            'title' => 'Gestión de CVs'
+        ];
+        $datagrid->setToolbarTemplateVariables($toolbarVariables);
     }
 }

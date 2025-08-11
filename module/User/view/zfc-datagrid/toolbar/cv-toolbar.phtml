@@ -1,0 +1,488 @@
+<?php
+/**
+ * Toolbar personalizada para el datagrid de CVs
+ * Incluye botón para agregar nuevo CV y navegación a gestión de usuarios
+ */
+?>
+
+<style>
+/* CSS personalizado para skills badges - bordes cuadrados como Bootstrap */
+.skills-container .badge,
+.skills-container span.badge,
+span.badge.bg-success,
+span.badge.bg-primary,
+span.badge.bg-warning,
+span.badge.bg-secondary,
+span.badge.bg-light {
+    font-size: 0.75rem !important;
+    font-weight: 500 !important;
+    padding: 0.375rem 0.75rem !important;
+    border-radius: 0rem !important;
+    text-decoration: none !important;
+    display: inline-block !important;
+    margin-right: 0.25rem !important;
+    margin-bottom: 0.25rem !important;
+    border: 1px solid transparent !important;
+    transition: none !important;
+    animation: none !important;
+    transform: none !important;
+    -webkit-border-radius: 0rem !important;
+    -moz-border-radius: 0rem !important;
+}
+
+.skills-container .badge.bg-success {
+    background-color: #198754 !important;
+    color: #fff !important;
+    border-color: #198754 !important;
+}
+
+.skills-container .badge.bg-primary {
+    background-color: #0d6efd !important;
+    color: #fff !important;
+    border-color: #0d6efd !important;
+}
+
+.skills-container .badge.bg-warning {
+    background-color: #ffc107 !important;
+    color: #000 !important;
+    border-color: #ffc107 !important;
+}
+
+.skills-container .badge.bg-secondary {
+    background-color: #6c757d !important;
+    color: #fff !important;
+    border-color: #6c757d !important;
+}
+
+.skills-container .badge.bg-light {
+    background-color: #f8f9fa !important;
+    color: #000 !important;
+    border-color: #dee2e6 !important;
+}
+
+/* Remover cualquier animación o transición de badges */
+.skills-container .badge:hover,
+.skills-container .badge:focus,
+.skills-container .badge:active,
+.skills-container span.badge:hover,
+.skills-container span.badge:focus,
+.skills-container span.badge:active {
+    transform: none !important;
+    animation: none !important;
+    transition: none !important;
+    box-shadow: none !important;
+    border-radius: 0rem !important;
+    -webkit-border-radius: 0rem !important;
+    -moz-border-radius: 0rem !important;
+}
+
+.skills-container {
+    line-height: 1.5;
+}
+
+/* Remover animaciones globales de badges si existen y forzar bordes cuadrados */
+.badge {
+    animation: none !important;
+    transition: none !important;
+}
+
+/* Forzar bordes cuadrados en todos los badges dentro de skills-container */
+.skills-container * {
+    border-radius: 0rem !important;
+    -webkit-border-radius: 0rem !important;
+    -moz-border-radius: 0rem !important;
+}
+
+/* Hacer que el datagrid ocupe toda la pantalla con márgenes de 15px */
+.zfcDatagrid {
+    width: calc(100% - 30px) !important;
+    max-width: none !important;
+    margin-left: 15px !important;
+    margin-right: 15px !important;
+}
+
+.zfcDatagrid table {
+    width: 100% !important;
+    max-width: none !important;
+    table-layout: fixed !important;
+}
+
+.zfcDatagrid .table-responsive {
+    overflow-x: auto !important;
+    width: 100% !important;
+}
+
+/* Ajustar contenedores padre con márgenes de 15px */
+.container, .container-fluid {
+    max-width: none !important;
+    width: calc(100% - 30px) !important;
+    margin-left: 15px !important;
+    margin-right: 15px !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+/* Asegurar que el body y html ocupen todo el ancho */
+body, html {
+    width: 100% !important;
+    overflow-x: auto !important;
+}
+
+/* Optimizar botones de acción (Ver, Editar, Eliminar) para que entren en una línea */
+.zfcDatagrid td:last-child {
+    white-space: nowrap !important;
+    min-width: 220px !important;
+    width: 220px !important;
+    max-width: 220px !important;
+    text-align: center !important;
+}
+
+.zfcDatagrid th:last-child {
+    min-width: 220px !important;
+    width: 220px !important;
+    max-width: 220px !important;
+    text-align: center !important;
+}
+
+.zfcDatagrid .btn-action {
+    margin-right: 3px !important;
+    margin-bottom: 0 !important;
+    padding: 0.375rem 0.75rem !important;
+    font-size: 0.875rem !important;
+    white-space: nowrap !important;
+    display: inline-block !important;
+    border-radius: 0.25rem !important;
+}
+
+.zfcDatagrid .btn-action i {
+    font-size: 0.875rem !important;
+    margin-right: 4px !important;
+}
+
+.zfcDatagrid .btn-action span {
+    font-size: 0.875rem !important;
+}
+
+/* Asegurar que los botones no se rompan en múltiples líneas */
+.zfcDatagrid .btn-group {
+    display: inline-flex !important;
+    flex-wrap: nowrap !important;
+    gap: 1px !important;
+}
+
+/* Hacer más compactos los botones de acción */
+.zfcDatagrid .btn-view, 
+.zfcDatagrid .btn-edit, 
+.zfcDatagrid .btn-delete {
+    min-width: auto !important;
+    padding: 0.2rem 0.3rem !important;
+}
+
+/* Centrar y compactar la columna de acciones */
+.zfcDatagrid th:last-child,
+.zfcDatagrid td:last-child {
+    text-align: center !important;
+    vertical-align: middle !important;
+}
+
+/* Forzar ancho específico para la columna de acciones usando selectores más específicos */
+table.table thead tr th:last-child,
+table.table tbody tr td:last-child {
+    min-width: 220px !important;
+    width: 220px !important;
+    max-width: 220px !important;
+}
+
+/* Hacer que solo se muestren iconos en pantallas pequeñas */
+@media (max-width: 768px) {
+    .zfcDatagrid .btn-action span {
+        display: none !important;
+    }
+    .zfcDatagrid .btn-action {
+        padding: 0.2rem !important;
+        min-width: 28px !important;
+    }
+}
+</style>
+
+<!-- Toolbar mejorada con Bootstrap para CVs -->
+<div class="w-100 mb-4" style="margin-left: 15px; margin-right: 15px; width: calc(100% - 30px);">
+    <div class="card shadow-sm border-0">
+        <div class="card-body py-3">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <!-- Botón para agregar nuevo CV con badge de contador -->
+                    <div class="btn-toolbar" role="toolbar">
+                        <div class="btn-group me-3" role="group">
+                            <a href="<?= $this->url('cvs/add') ?>" class="btn btn-success  shadow-sm">
+                                <i class="fas fa-file-plus me-2"></i>
+                                <span class="fw-semibold">Nuevo CV</span>
+                            </a>
+                            
+                            <a href="<?= $this->url('user') ?>" class="btn btn-outline-primary  shadow-sm">
+                                <i class="fas fa-users me-2"></i>
+                                <span class="fw-semibold">Usuarios</span>
+                            </a>
+                        </div>
+                       
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="d-flex justify-content-end align-items-center">
+                        <!-- Botones de exportación mejorados -->
+                        <?php if (isset($exportButtons) && !empty($exportButtons)): ?>
+                            <div class="btn-group me-3" role="group">
+                                <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                                    <i class="fas fa-download me-1"></i> Exportar
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <?= $exportButtons ?>
+                                </ul>
+                            </div>
+                        <?php endif; ?>
+                        
+                        <!-- Botón de actualizar -->
+                        <button type="button" class="btn btn-outline-success" onclick="location.reload()" title="Actualizar datos">
+                            <i class="fas fa-sync-alt"></i>
+                            <span class="d-none d-sm-inline ms-1">Actualizar</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Alert informativo opcional -->
+<div class="alert alert-success alert-dismissible fade show d-none" role="alert" id="datagrid-info">
+    <i class="fas fa-info-circle me-2"></i>
+    <strong>Información:</strong> <span id="alert-message">Datos cargados correctamente.</span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+
+<style>
+/* Estilos adicionales para la toolbar mejorada de CVs */
+.card {
+    border-radius: 12px !important;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%) !important;
+}
+
+.btn-success.btn-lg {
+    border-radius: 8px !important;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+    border: none !important;
+    transition: all 0.3s ease !important;
+}
+
+.btn-success.btn-lg:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 25px rgba(40,167,69,0.3) !important;
+}
+
+.btn-outline-primary.btn-lg {
+    border-radius: 8px !important;
+    border: 2px solid #007bff !important;
+    transition: all 0.3s ease !important;
+}
+
+.btn-outline-primary.btn-lg:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 25px rgba(0,123,255,0.3) !important;
+}
+
+.badge.bg-success {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+    border-radius: 20px !important;
+    animation: pulse-subtle-cv 2s infinite !important;
+}
+
+@keyframes pulse-subtle-cv {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.btn-outline-secondary, .btn-outline-success {
+    border-radius: 6px !important;
+    transition: all 0.2s ease !important;
+}
+
+.btn-outline-success:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(40,167,69,0.2) !important;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Función para corregir enlaces de botones
+    function fixActionButtons() {
+        const rows = document.querySelectorAll('tbody tr');
+        rows.forEach(function(row) {
+            const firstCell = row.querySelector('td:first-child');
+            if (firstCell) {
+                const cvId = firstCell.textContent.trim();
+                
+                // Corregir enlaces si hay un ID válido
+                if (cvId && /^\d+$/.test(cvId)) {
+                    const links = row.querySelectorAll('a[href*=":cv_id"]');
+                    links.forEach(function(link) {
+                        link.href = link.href.replace(':cv_id', cvId);
+                    });
+                }
+            }
+        });
+    }
+    
+    // Función para contar CVs y actualizar badge
+    function updateCvCount() {
+        const rows = document.querySelectorAll('tbody tr');
+        const count = rows.length;
+        const countElement = document.getElementById('total-cvs-count');
+        if (countElement) {
+            countElement.textContent = `Total: ${count} CV${count !== 1 ? 's' : ''}`;
+        }
+    }
+    
+    // Función para convertir skills en badges coloreados
+    function formatSkillsBadges() {
+        const rows = document.querySelectorAll('table.table tbody tr');
+        
+        rows.forEach(function(row, rowIndex) {
+            const cells = row.querySelectorAll('td');
+            
+            // Buscar la columna de skills (debería contener texto con formato skill:nivel|skill:nivel)
+            for (let i = 0; i < cells.length; i++) {
+                const cellText = cells[i].textContent.trim();
+                
+                // Verificar si esta celda contiene skills (formato: palabra:nivel|palabra:nivel o palabra:nivel)
+                if (cellText && cellText.includes(':') && (cellText.includes('|') || !cellText.includes(' '))) {
+                    const skillsCell = cells[i];
+                    const skills = cellText.split('|');
+                    let badgesHtml = '<div class="skills-container">';
+                    
+                    skills.forEach(function(skill) {
+                        if (skill && skill.includes(':')) {
+                            const [skillName, level] = skill.split(':');
+                            const badgeClass = getSkillBadgeClass(level.trim());
+                            badgesHtml += `<span class="badge ${badgeClass} me-1 mb-1" title="${skillName}: ${level}">${skillName}</span>`;
+                        }
+                    });
+                    
+                    badgesHtml += '</div>';
+                    skillsCell.innerHTML = badgesHtml;
+                    break; // Salir del bucle una vez que encontremos la columna de skills
+                }
+            }
+        });
+    }
+    
+
+    
+    // Función para obtener la clase CSS del badge según el nivel
+    function getSkillBadgeClass(level) {
+        switch(level.toLowerCase()) {
+            case 'experto':
+                return 'bg-success';
+            case 'avanzado':
+                return 'bg-primary';
+            case 'intermedio':
+                return 'bg-warning text-dark';
+            case 'basico':
+            case 'básico':
+                return 'bg-secondary';
+            default:
+                return 'bg-light text-dark';
+        }
+    }
+    
+    // Función para mostrar alertas informativas
+    function showInfo(message, type = 'success') {
+        const alertElement = document.getElementById('datagrid-info');
+        const messageElement = document.getElementById('alert-message');
+        
+        if (alertElement && messageElement) {
+            alertElement.className = `alert alert-${type} alert-dismissible fade show`;
+            messageElement.textContent = message;
+            alertElement.classList.remove('d-none');
+            
+            // Auto-ocultar después de 3 segundos
+            setTimeout(() => {
+                alertElement.classList.add('d-none');
+            }, 3000);
+        }
+    }
+    
+    // Función para formatear la columna de usuario (nombre + email)
+    function formatUserInfoColumn() {
+        const rows = document.querySelectorAll('table.table tbody tr');
+        
+        rows.forEach(function(row) {
+            const cells = row.querySelectorAll('td');
+            
+            // Buscar la columna que contiene nombre\nemail
+            for (let i = 0; i < cells.length; i++) {
+                const cell = cells[i];
+                const cellText = cell.textContent.trim();
+                
+                // Si contiene un salto de línea (\n) es probablemente la columna de usuario
+                if (cellText && cellText.includes('\n')) {
+                    const lines = cellText.split('\n');
+                    if (lines.length >= 2) {
+                        const nombre = lines[0].trim();
+                        const email = lines[1].trim();
+                        
+                        cell.innerHTML = `<div class="user-info-column">
+                            <strong>${nombre}</strong><br>
+                            <small class="text-muted">${email}</small>
+                        </div>`;
+                        break;
+                    }
+                }
+            }
+        });
+    }
+
+    // Ejecutar funciones iniciales
+    fixActionButtons();
+    updateCvCount();
+    formatSkillsBadges();
+    formatUserInfoColumn();
+    
+    // Mostrar mensaje de carga exitosa
+    setTimeout(() => {
+        showInfo('Datos de CVs cargados correctamente.');
+    }, 500);
+    
+    // También ejecutar después de un pequeño retraso por si el contenido se carga dinámicamente
+    setTimeout(() => {
+        fixActionButtons();
+        updateCvCount();
+        formatSkillsBadges();
+        formatUserInfoColumn();
+    }, 1000);
+    
+    // Inicializar tooltips de Bootstrap
+    function initializeTooltips() {
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    }
+    
+    // Observar cambios en la tabla para actualizar el contador y reinicializar tooltips
+    const observer = new MutationObserver(() => {
+        updateCvCount();
+        fixActionButtons();
+        setTimeout(initializeTooltips, 100); // Reinicializar tooltips después de cambios
+    });
+    
+    const tableContainer = document.querySelector('.zfcDatagrid-container');
+    if (tableContainer) {
+        observer.observe(tableContainer, { childList: true, subtree: true });
+    }
+    
+    // Inicializar tooltips al cargar
+    setTimeout(initializeTooltips, 1500);
+});
+</script>

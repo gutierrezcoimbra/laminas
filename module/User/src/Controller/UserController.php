@@ -66,14 +66,12 @@ class UserController extends AbstractActionController
         $datagrid->setTitle('Lista de Usuarios');
         $datagrid->setDefaultItemsPerPage(25);
         
-        // Configurar la fuente de datos usando Laminas\Db\Sql\Select
+        // Configurar la fuente de datos usando la vista personalizada
         $adapter = $this->userTable->getTableGateway()->getAdapter();
         $sql = new Sql($adapter);
         $select = $sql->select();
-        $select->from('users')
-               ->columns(['id', 'nombre', 'apellidos', 'email', 'fechaNacimiento'])
-               ->where(['deletedAt' => 0])
-               ->order(['id DESC']);
+        $select->from('users_datagrid_view')
+               ->order(['user_id DESC']);
         
         $datagrid->setDataSource($select, $adapter);
         
@@ -248,47 +246,46 @@ class UserController extends AbstractActionController
     private function configureUserColumns(Datagrid $datagrid)
     {
         // Columna ID (oculta pero necesaria para los botones de acción)
-        $colId = new ColumnSelect('id');
+        $colId = new ColumnSelect('user_id');
         $colId->setIdentity(true);
         $colId->setLabel('ID');
         $colId->setWidth(5);
         $colId->setType(new Type\Number());
         $datagrid->addColumn($colId);
 
-                // Columna Nombre Completo
-        $colNombre = new ColumnSelect('nombre');
-        $colNombre->setLabel('Nombre');
-        $colNombre->setWidth(15);
-        $colNombre->setSortDefault(1, 'ASC');
-        $colNombre->setFilterDefaultOperation(Filter::LIKE); // Filtro tipo "contiene"
-        $datagrid->addColumn($colNombre);
-
-        // Columna Apellidos
-        $colApellidos = new ColumnSelect('apellidos');
-        $colApellidos->setLabel('Apellidos');
-        $colApellidos->setWidth(15);
-        $colApellidos->setFilterDefaultOperation(Filter::LIKE); // Filtro tipo "contiene"
-        $datagrid->addColumn($colApellidos);
+        // Columna Nombre Completo (combinado)
+        $colNombreCompleto = new ColumnSelect('nombre_completo');
+        $colNombreCompleto->setLabel('Nombre Completo');
+        $colNombreCompleto->setWidth(20);
+        $colNombreCompleto->setSortDefault(1, 'ASC');
+        $colNombreCompleto->setFilterDefaultOperation(Filter::LIKE);
+        $datagrid->addColumn($colNombreCompleto);
 
         // Columna Email
         $colEmail = new ColumnSelect('email');
         $colEmail->setLabel('Email');
-        $colEmail->setWidth(15);
-        $colEmail->setFilterDefaultOperation(Filter::LIKE); // Filtro tipo "contiene"
+        $colEmail->setWidth(18);
+        $colEmail->setFilterDefaultOperation(Filter::LIKE);
         $datagrid->addColumn($colEmail);
 
-        // Columna Fecha de Nacimiento
-        $colFechaNacimiento = new ColumnSelect('fechaNacimiento');
-        $colFechaNacimiento->setLabel('Fecha Nacimiento');
-        $colFechaNacimiento->setWidth(17);
-        // Formato fuente: Y-m-d (como viene de la DB), formato salida: MEDIUM (localizado)
-        $dateTimeType = new Type\DateTime('Y-m-d', \IntlDateFormatter::MEDIUM, \IntlDateFormatter::NONE);
-        $colFechaNacimiento->setType($dateTimeType);
-        // Configurar filtro personalizado para fechas
-        $colFechaNacimiento->setFilterDefaultOperation(Filter::GREATER_EQUAL);
-        $datagrid->addColumn($colFechaNacimiento);
+        // Columna Edad (calculada desde la vista)
+        $colEdad = new ColumnSelect('edad');
+        $colEdad->setLabel('Edad');
+        $colEdad->setWidth(8);
+        $colEdad->setType(new Type\Number());
+        $colEdad->setFilterDefaultOperation(Filter::EQUAL);
+        $datagrid->addColumn($colEdad);
 
+      
 
+        // Columna Profesiones
+        $colProfesiones = new ColumnSelect('profesiones');
+        $colProfesiones->setLabel('Profesiones');
+        $colProfesiones->setWidth(25);
+        $colProfesiones->setFilterDefaultOperation(Filter::LIKE);
+        $datagrid->addColumn($colProfesiones);
+
+     
     }
 
     private function configureUserActions(Datagrid $datagrid)
@@ -296,46 +293,38 @@ class UserController extends AbstractActionController
         // Crear columna de acciones
         $actionColumn = new ColumnAction();
         $actionColumn->setLabel('Acciones');
-        $actionColumn->setWidth(38);
+        $actionColumn->setWidth(80);
         
-        // Acción Ver - Mejorada con Bootstrap
+        // Acción Ver - Sin tooltips para evitar errores de Popper
         $actionView = new ActionButton();
         $actionView->setLabel('<i class="fas fa-eye"></i> <span class="d-none d-md-inline">Ver</span>');
-        $actionView->setLink('/user/view/:id');
+        $actionView->setLink('/user/view/:user_id');
         $actionView->setAttribute('class', 'btn btn-action btn-view btn-sm');
         $actionView->setAttribute('title', 'Ver detalles del usuario');
-        $actionView->setAttribute('data-bs-toggle', 'tooltip');
-        $actionView->setAttribute('data-bs-placement', 'top');
         $actionColumn->addAction($actionView);
 
-        // Acción Editar - Mejorada con Bootstrap
+        // Acción Editar - Sin tooltips para evitar errores de Popper
         $actionEdit = new ActionButton();
         $actionEdit->setLabel('<i class="fas fa-edit"></i> <span class="d-none d-md-inline">Editar</span>');
-        $actionEdit->setLink('/user/edit/:id');
+        $actionEdit->setLink('/user/edit/:user_id');
         $actionEdit->setAttribute('class', 'btn btn-action btn-edit btn-sm');
         $actionEdit->setAttribute('title', 'Editar información del usuario');
-        $actionEdit->setAttribute('data-bs-toggle', 'tooltip');
-        $actionEdit->setAttribute('data-bs-placement', 'top');
         $actionColumn->addAction($actionEdit);
 
-        // Acción CVs - Mejorada con Bootstrap
+        // Acción CVs - Sin tooltips para evitar errores de Popper
         $actionCvs = new ActionButton();
         $actionCvs->setLabel('<i class="fas fa-file-alt"></i> <span class="d-none d-md-inline">CVs</span>');
-        $actionCvs->setLink('/user/:id/cv');
+        $actionCvs->setLink('/user/:user_id/cv');
         $actionCvs->setAttribute('class', 'btn btn-action btn-success btn-sm');
         $actionCvs->setAttribute('title', 'Ver y gestionar CVs del usuario');
-        $actionCvs->setAttribute('data-bs-toggle', 'tooltip');
-        $actionCvs->setAttribute('data-bs-placement', 'top');
         $actionColumn->addAction($actionCvs);
 
-        // Acción Eliminar - Mejorada con Bootstrap
+        // Acción Eliminar - Sin tooltips para evitar errores de Popper
         $actionDelete = new ActionButton();
         $actionDelete->setLabel('<i class="fas fa-trash"></i> <span class="d-none d-md-inline">Eliminar</span>');
-        $actionDelete->setLink('/user/delete/:id');
+        $actionDelete->setLink('/user/delete/:user_id');
         $actionDelete->setAttribute('class', 'btn btn-action btn-delete btn-sm');
         $actionDelete->setAttribute('title', 'Eliminar usuario permanentemente');
-        $actionDelete->setAttribute('data-bs-toggle', 'tooltip');
-        $actionDelete->setAttribute('data-bs-placement', 'top');
         $actionDelete->setAttribute('onclick', 'return confirm("¿Está seguro de que desea eliminar este usuario? Esta acción no se puede deshacer.")');
         $actionColumn->addAction($actionDelete);
         
@@ -354,5 +343,61 @@ class UserController extends AbstractActionController
             'title' => 'Gestión de Usuarios'
         ];
         $datagrid->setToolbarTemplateVariables($toolbarVariables);
+    }
+
+    public function getNamesAction()
+    {
+        $request = $this->getRequest();
+        
+        if (!$request->isXmlHttpRequest() || !$request->isPost()) {
+            return $this->getResponse()->setStatusCode(400);
+        }
+
+        $data = json_decode($request->getContent(), true);
+        $userIds = $data['userIds'] ?? [];
+        
+        if (empty($userIds) || !is_array($userIds)) {
+            return $this->getResponse()->setStatusCode(400);
+        }
+
+        try {
+            $users = [];
+            foreach ($userIds as $userId) {
+                $userId = (int) $userId;
+                if ($userId > 0) {
+                    try {
+                        $user = $this->userTable->getUser($userId);
+                        $users[$userId] = [
+                            'nombre' => $user->nombre,
+                            'apellidos' => $user->apellidos,
+                            'email' => $user->email
+                        ];
+                    } catch (\Exception $e) {
+                        // Usuario no encontrado, continuar
+                        continue;
+                    }
+                }
+            }
+
+            $response = $this->getResponse();
+            $response->getHeaders()->addHeaderLine('Content-Type', 'application/json');
+            $response->setContent(json_encode([
+                'success' => true,
+                'users' => $users
+            ]));
+            
+            return $response;
+            
+        } catch (\Exception $e) {
+            $response = $this->getResponse();
+            $response->setStatusCode(500);
+            $response->getHeaders()->addHeaderLine('Content-Type', 'application/json');
+            $response->setContent(json_encode([
+                'success' => false,
+                'error' => 'Error al obtener usuarios'
+            ]));
+            
+            return $response;
+        }
     }
 }

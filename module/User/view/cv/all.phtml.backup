@@ -1,0 +1,414 @@
+<?php
+$title = 'Gestión de CVs';
+$this->headTitle($title);
+?>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">
+                <i class="fas fa-file-text"></i> 
+                Gestión de CVs
+            </h1>
+            
+            <?= $this->partial('user/partials/flash-messages'); ?>
+            
+            <div class="mb-3">
+                <a href="<?= $this->url('cvs/add') ?>" class="btn btn-success">
+                    <i class="fas fa-plus"></i> Agregar Nuevo CV
+                </a>
+                <a href="<?= $this->url('user') ?>" class="btn btn-outline-secondary">
+                    <i class="fas fa-users"></i> Gestión de Usuarios
+                </a>
+            </div>
+            
+            <div class="card modern-card">
+                <div class="card-header modern-header-cv">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 text-white">
+                            <i class="fas fa-file-text me-2"></i>
+                            CVs Registrados (<?= count($cvs) ?>)
+                        </h5>
+                        <div class="header-actions">
+                            <button class="btn btn-outline-light btn-sm me-2">
+                                <i class="fas fa-search"></i> Buscar
+                            </button>
+                            <button class="btn btn-outline-light btn-sm">
+                                <i class="fas fa-download"></i> Exportar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <?php if (empty($cvs)): ?>
+                        <div class="empty-state">
+                            <i class="fas fa-file-text fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No hay CVs registrados</h5>
+                            <p class="text-muted">Comienza creando el primer currículum en el sistema</p>
+                        </div>
+                    <?php else: ?>
+                        <div class="modern-table-container">
+                            <?php foreach ($cvs as $cv): ?>
+                                <div class="cv-row">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-1">
+                                            <div class="cv-icon">
+                                                <i class="fas fa-file-text"></i>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="cv-info">
+                                                <h6 class="cv-title mb-1"><?= $this->escapeHtml($cv->titulo) ?></h6>
+                                                <small class="cv-id text-muted">ID: <?= $this->escapeHtml($cv->id) ?></small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="user-info">
+                                                <div class="user-name-cv">
+                                                    <i class="fas fa-user text-muted me-2"></i>
+                                                    <strong><?= $this->escapeHtml($cv->user_nombre . ' ' . $cv->user_apellidos) ?></strong>
+                                                </div>
+                                                <div class="user-email-cv">
+                                                    <i class="fas fa-envelope text-muted me-2"></i>
+                                                    <small><?= $this->escapeHtml($cv->user_email) ?></small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="cv-summary">
+                                                <?php if (!empty($cv->resumen)): ?>
+                                                    <p class="summary-text">
+                                                        <?= $this->escapeHtml(substr($cv->resumen, 0, 80)) ?>
+                                                        <?= strlen($cv->resumen ?? '') > 80 ? '...' : '' ?>
+                                                    </p>
+                                                <?php else: ?>
+                                                    <span class="no-summary">Sin resumen disponible</span>
+                                                <?php endif; ?>
+                                                <div class="cv-date">
+                                                    <i class="fas fa-calendar text-muted me-1"></i>
+                                                    <small><?= !empty($cv->createdAt) ? (new DateTime($cv->createdAt))->format('d/m/Y H:i') : 'N/A' ?></small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="cv-salary">
+                                                <?php if (!empty($cv->pretension_salarial)): ?>
+                                                    <div class="salary-info">
+                                                        <i class="fas fa-dollar-sign text-success me-1"></i>
+                                                        <span class="salary-amount text-success fw-bold">
+                                                            <?= number_format($cv->pretension_salarial, 2, '.', ',') ?>
+                                                        </span>
+                                                    </div>
+                                                    <small class="text-muted">USD/mes</small>
+                                                <?php else: ?>
+                                                    <div class="no-salary">
+                                                        <i class="fas fa-minus-circle text-muted me-1"></i>
+                                                        <small class="text-muted">Sin especificar</small>
+                                                    </div>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-1">
+                                            <div class="cv-skills">
+                                                <?php if (!empty($cv->skills)): ?>
+                                                    <h6 class="skills-title">
+                                                        <i class="fas fa-tools text-muted me-1"></i>Skills
+                                                    </h6>
+                                                    <div class="skills-container-cards">
+                                                        <?php foreach (array_slice($cv->skills, 0, 2) as $skill): ?>
+                                                            <?php
+                                                            $badgeClass = match($skill['nivel']) {
+                                                                'basico' => 'badge-secondary',
+                                                                'intermedio' => 'badge-info', 
+                                                                'avanzado' => 'badge-warning',
+                                                                'experto' => 'badge-success',
+                                                                default => 'badge-secondary'
+                                                            };
+                                                            
+                                                            // Colores inline como respaldo
+                                                            $inlineStyle = match($skill['nivel']) {
+                                                                'basico' => 'background-color: #6c757d !important; color: #ffffff !important;',
+                                                                'intermedio' => 'background-color: #17a2b8 !important; color: #ffffff !important;',
+                                                                'avanzado' => 'background-color: #fd7e14 !important; color: #ffffff !important;',
+                                                                'experto' => 'background-color: #28a745 !important; color: #ffffff !important;',
+                                                                default => 'background-color: #6c757d !important; color: #ffffff !important;'
+                                                            };
+                                                            ?>
+                                                            <span class="badge <?= $badgeClass ?> skill-badge-card me-1 mb-1" 
+                                                                  style="<?= $inlineStyle ?>" 
+                                                                  title="Nivel: <?= ucfirst($skill['nivel']) ?>">
+                                                                <?= $this->escapeHtml($skill['nombre']) ?>
+                                                            </span>
+                                                        <?php endforeach; ?>
+                                                        <?php if (count($cv->skills) > 2): ?>
+                                                            <span class="badge badge-light skill-badge-card" 
+                                                                  style="background-color: #f8f9fa !important; color: #6c757d !important; border: 1px solid #dee2e6 !important;">
+                                                                +<?= count($cv->skills) - 2 ?>
+                                                            </span>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                <?php else: ?>
+                                                    <div class="no-skills">
+                                                        <i class="fas fa-minus-circle text-muted me-1"></i>
+                                                        <small class="text-muted">Sin skills</small>
+                                                    </div>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="action-buttons">
+                                                <div class="btn-group-vertical">
+                                                    <a href="<?= $this->url('cvs/view', ['id' => $cv->id]) ?>" 
+                                                       class="action-btn view-btn-cv" title="Ver CV completo">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    <a href="<?= $this->url('cvs/edit', ['id' => $cv->id]) ?>" 
+                                                       class="action-btn edit-btn-cv" title="Editar CV">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                    <a href="<?= $this->url('cvs/delete', ['id' => $cv->id]) ?>" 
+                                                       class="action-btn delete-btn-cv" title="Eliminar CV">
+                                                        <i class="fas fa-trash"></i>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Modern Card Styles for CVs */
+.modern-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.modern-header-cv {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border: none;
+    padding: 20px 25px;
+}
+
+.header-actions .btn {
+    border-radius: 20px;
+    font-size: 0.85rem;
+    padding: 5px 15px;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+/* Modern Table Container */
+.modern-table-container {
+    background: #fff;
+}
+
+.cv-row {
+    padding: 20px 25px;
+    border-bottom: 1px solid #f1f3f4;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.cv-row:hover {
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    transform: translateX(5px);
+    box-shadow: inset 4px 0 0 #28a745;
+}
+
+.cv-row:last-child {
+    border-bottom: none;
+}
+
+/* CV Icon */
+.cv-icon {
+    width: 45px;
+    height: 45px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    color: white;
+    font-size: 1.2rem;
+}
+
+/* CV Info */
+.cv-title {
+    color: #2c3e50;
+    font-weight: 600;
+    margin-bottom: 0;
+    font-size: 1rem;
+}
+
+.cv-id {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+/* User Info in CV */
+.user-name-cv {
+    color: #495057;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+}
+
+.user-email-cv {
+    color: #6c757d;
+    font-size: 0.8rem;
+}
+
+/* CV Summary */
+.cv-summary {
+    padding: 0 10px;
+}
+
+.summary-text {
+    color: #495057;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    margin-bottom: 8px;
+    text-align: justify;
+}
+
+.no-summary {
+    color: #adb5bd;
+    font-style: italic;
+    font-size: 0.85rem;
+}
+
+.cv-date {
+    color: #6c757d;
+    font-size: 0.75rem;
+}
+
+/* CV Skills */
+.cv-skills {
+    padding: 0 10px;
+}
+
+.skills-title {
+    color: #495057;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.skills-container-cards {
+    line-height: 1.6;
+}
+
+.skill-badge-card {
+    font-size: 0.65em;
+    padding: 0.3em 0.5em;
+    border-radius: 0.25rem;
+    font-weight: 500;
+    display: inline-block;
+    margin-right: 0.25rem;
+    margin-bottom: 0.25rem;
+}
+
+.no-skills {
+    color: #adb5bd;
+    font-style: italic;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+}
+
+/* Action Buttons for CVs */
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    align-items: center;
+}
+
+.action-btn {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-size: 0.85rem;
+}
+
+.view-btn-cv {
+    background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+    color: white;
+}
+
+.view-btn-cv:hover {
+    color: white;
+    transform: scale(1.1);
+    box-shadow: 0 5px 15px rgba(23, 162, 184, 0.4);
+}
+
+.edit-btn-cv {
+    background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+    color: white;
+}
+
+.edit-btn-cv:hover {
+    color: white;
+    transform: scale(1.1);
+    box-shadow: 0 5px 15px rgba(255, 193, 7, 0.4);
+}
+
+.delete-btn-cv {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    color: white;
+}
+
+.delete-btn-cv:hover {
+    color: white;
+    transform: scale(1.1);
+    box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .cv-row {
+        padding: 15px;
+    }
+    
+    .modern-header-cv {
+        padding: 15px;
+    }
+    
+    .header-actions {
+        display: none;
+    }
+    
+    .cv-row .row > div {
+        margin-bottom: 10px;
+    }
+    
+    .action-buttons {
+        flex-direction: row;
+        justify-content: center;
+    }
+    
+    .cv-summary {
+        padding: 0;
+    }
+}
+</style>

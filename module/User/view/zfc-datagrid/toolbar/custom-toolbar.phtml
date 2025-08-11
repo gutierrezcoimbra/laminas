@@ -6,7 +6,7 @@
 ?>
 
 <!-- Toolbar mejorada con Bootstrap -->
-<div class="container-fluid px-0 mb-4">
+<div class="w-100 mb-4" style="margin-left: 15px; margin-right: 15px; width: calc(100% - 30px);">
     <div class="card shadow-sm border-0">
         <div class="card-body py-3">
             <div class="row align-items-center">
@@ -14,19 +14,12 @@
                     <!-- Botón para agregar nuevo usuario con badge de contador -->
                     <div class="btn-toolbar" role="toolbar">
                         <div class="btn-group me-3" role="group">
-                            <a href="<?= $this->url('user/add') ?>" class="btn btn-primary btn-lg shadow-sm">
+                            <a href="<?= $this->url('user/add') ?>" class="btn btn-primary  shadow-sm">
                                 <i class="fas fa-user-plus me-2"></i>
                                 <span class="fw-semibold">Nuevo Usuario</span>
                             </a>
                         </div>
                         
-                        <!-- Badge con total de usuarios -->
-                        <div class="d-flex align-items-center">
-                            <span class="badge bg-info fs-6 px-3 py-2">
-                                <i class="fas fa-users me-1"></i>
-                                <span id="total-users-count">Total: --</span>
-                            </span>
-                        </div>
                     </div>
                 </div>
                 
@@ -102,6 +95,90 @@
     transform: translateY(-1px) !important;
     box-shadow: 0 4px 12px rgba(0,123,255,0.2) !important;
 }
+
+/* Estilos para las listas de profesiones */
+.profesiones-list {
+    font-size: 0.875rem !important;
+    line-height: 1.4 !important;
+}
+
+.profesion-item {
+    padding: 2px 0 !important;
+    color: #495057 !important;
+    font-weight: 500 !important;
+}
+
+.profesion-item i,
+.profesion-item .fas,
+.profesion-item .fa-briefcase {
+    color: #007bff !important;
+    font-size: 0.75rem !important;
+    margin-right: 4px !important;
+}
+
+/* Asegurar que todos los iconos dentro de profesiones tengan el estilo correcto */
+.profesiones-list .profesion-item i {
+    color: #007bff !important;
+    font-size: 0.75rem !important;
+    margin-right: 4px !important;
+}
+
+.profesion-item:not(:last-child) {
+    border-bottom: 1px solid #e9ecef !important;
+    padding-bottom: 4px !important;
+    margin-bottom: 2px !important;
+}
+
+/* Hacer que el datagrid ocupe toda la pantalla con márgenes de 15px */
+.container, .container-fluid, .container-lg, .container-md, .container-sm, .container-xl {
+    max-width: none !important;
+    width: calc(100% - 30px) !important;
+    margin-left: 15px !important;
+    margin-right: 15px !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+.zfcDatagrid-container {
+    width: 100% !important;
+    max-width: none !important;
+    margin-left: 15px !important;
+    margin-right: 15px !important;
+}
+
+.table-responsive {
+    width: 100% !important;
+    overflow-x: auto !important;
+}
+
+.table {
+    width: 100% !important;
+    min-width: 100% !important;
+}
+
+/* Aplicar márgenes al datagrid completo */
+.zfcDatagrid {
+    margin-left: 15px !important;
+    margin-right: 15px !important;
+    width: calc(100% - 30px) !important;
+}
+
+.zfcDatagrid table {
+    width: 100% !important;
+    max-width: none !important;
+    table-layout: fixed !important;
+}
+
+.zfcDatagrid .table-responsive {
+    overflow-x: auto !important;
+    width: 100% !important;
+}
+
+/* Asegurar que el body y html ocupen todo el ancho */
+body, html {
+    width: 100% !important;
+    overflow-x: auto !important;
+}
 </style>
 
 <script>
@@ -116,9 +193,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Corregir enlaces si hay un ID válido
                 if (userId && /^\d+$/.test(userId)) {
-                    const links = row.querySelectorAll('a[href*=":id"]');
+                    const links = row.querySelectorAll('a[href*=":user_id"]');
                     links.forEach(function(link) {
-                        link.href = link.href.replace(':id', userId);
+                        link.href = link.href.replace(':user_id', userId);
                     });
                 }
             }
@@ -133,6 +210,91 @@ document.addEventListener('DOMContentLoaded', function() {
         if (countElement) {
             countElement.textContent = `Total: ${count} usuario${count !== 1 ? 's' : ''}`;
         }
+    }
+
+    // Función para formatear profesiones como lista
+    function formatProfesiones() {
+        const rows = document.querySelectorAll('tbody tr');
+        
+        rows.forEach(function(row, rowIndex) {
+            const cells = row.querySelectorAll('td');
+            
+            // Debug específico para la primera fila
+            if (rowIndex === 0) {
+                console.log('Primera fila - contenido de celdas:', Array.from(cells).map(cell => cell.textContent.trim()));
+            }
+            
+            // Buscar específicamente la columna de profesiones (índice 5: Nombre, Email, Edad, CVs, Profesiones)
+            // O buscar por el contenido que parece ser profesiones
+            cells.forEach(function(cell, index) {
+                // Verificar si ya se aplicó el formato para evitar duplicados
+                if (cell.querySelector('.profesiones-list')) {
+                    return; // Ya está formateado, salir
+                }
+                
+                const text = cell.textContent.trim();
+                
+                // Debug específico para la primera fila
+                if (rowIndex === 0) {
+                    console.log(`Primera fila - Celda ${index}: "${text}"`);
+                }
+                
+                // Detectar la columna de profesiones de manera más específica
+                // Excluir explícitamente columnas de acciones y otros elementos
+                const isProfessionColumn = (
+                    text !== 'Sin CVs registrados' && 
+                    text !== '' && 
+                    text.length > 3 &&
+                    !text.includes('@') && // No es email
+                    !/^\d+$/.test(text) && // No es solo números (edad)
+                    !/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(text) && // No es fecha
+                    !/^\d{4}-\d{2}-\d{2}$/.test(text) && // No es fecha ISO
+                    !cell.querySelector('a') && // No contiene enlaces (botones de acción)
+                    !cell.querySelector('button') && // No contiene botones
+                    !cell.querySelector('.btn') && // No contiene elementos con clase btn
+                    !cell.querySelector('i.fas') && // No contiene iconos de FontAwesome (botones)
+                    !cell.closest('td:last-child') && // No es la última columna (acciones)
+                    // Estrategia: si no es email, ni número, ni fecha, ni botones
+                    (text.includes('|') || // Múltiples profesiones con separador
+                     (text.length > 8 && // Texto descriptivo más largo
+                      index >= 3 && index < cells.length - 1)) // No es la primera ni la última columna
+                );
+                
+                if (isProfessionColumn) {
+                    console.log('Texto encontrado en columna profesiones:', text); // Debug
+                    console.log('Contiene |:', text.includes('|')); // Debug
+                    
+                    // Si contiene | es múltiple, si no es una sola profesión
+                    let profesiones = [];
+                    if (text.includes('|')) {
+                        profesiones = text.split('|').map(p => p.trim()).filter(p => p !== '');
+                    } else {
+                        profesiones = [text.trim()];
+                    }
+                    
+                    console.log('Profesiones detectadas:', profesiones); // Debug
+                    
+                    if (profesiones.length > 0) {
+                        // Crear lista HTML (igual para una o múltiples profesiones)
+                        const ul = document.createElement('ul');
+                        ul.className = 'list-unstyled mb-0 profesiones-list';
+                        
+                        profesiones.forEach(function(profesion, index) {
+                            const li = document.createElement('li');
+                            li.className = 'profesion-item';
+                            li.innerHTML = `<i class="fas fa-briefcase me-1 text-primary"></i> ${profesion.trim()}`;
+                            ul.appendChild(li);
+                            console.log(`Profesión ${index + 1}: ${profesion.trim()} - HTML: ${li.innerHTML}`); // Debug
+                            console.log(`Elemento li creado:`, li); // Debug adicional
+                        });
+                        
+                        // Reemplazar el contenido de la celda
+                        cell.innerHTML = '';
+                        cell.appendChild(ul);
+                    }
+                }
+            });
+        });
     }
     
     // Función para mostrar alertas informativas
@@ -155,6 +317,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Ejecutar funciones iniciales
     fixActionButtons();
     updateUserCount();
+    formatProfesiones();
     
     // Mostrar mensaje de carga exitosa
     setTimeout(() => {
@@ -165,27 +328,62 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(() => {
         fixActionButtons();
         updateUserCount();
+        formatProfesiones();
     }, 1000);
     
-    // Inicializar tooltips de Bootstrap
+    // Ejecutar múltiples veces para asegurar que se aplique después de cualquier re-renderizado
+    setTimeout(() => {
+        formatProfesiones();
+    }, 2000);
+    
+    setTimeout(() => {
+        formatProfesiones();
+    }, 3000);
+    
+    // Tooltips deshabilitados para evitar errores de Popper.js
+    // Se mantiene el title attribute para mostrar información al hacer hover
     function initializeTooltips() {
-        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl);
-        });
+        // Función vacía - tooltips deshabilitados
     }
     
-    // Observar cambios en la tabla para actualizar el contador y reinicializar tooltips
-    const observer = new MutationObserver(() => {
-        updateUserCount();
-        fixActionButtons();
-        setTimeout(initializeTooltips, 100); // Reinicializar tooltips después de cambios
+    // Observar cambios en la tabla para actualizar el contador
+    const observer = new MutationObserver((mutations) => {
+        let shouldUpdate = false;
+        mutations.forEach(mutation => {
+            if (mutation.type === 'childList' || mutation.type === 'characterData') {
+                shouldUpdate = true;
+            }
+        });
+        
+        if (shouldUpdate) {
+            console.log('Detectado cambio en el DOM, re-aplicando formato...'); // Debug
+            setTimeout(() => {
+                updateUserCount();
+                fixActionButtons();
+                formatProfesiones();
+            }, 100);
+        }
     });
     
-    const tableContainer = document.querySelector('.zfcDatagrid-container');
-    if (tableContainer) {
-        observer.observe(tableContainer, { childList: true, subtree: true });
-    }
+    // Observar múltiples contenedores
+    const containers = [
+        '.zfcDatagrid-container',
+        '.table-responsive',
+        'tbody',
+        '.zfcDatagrid'
+    ];
+    
+    containers.forEach(selector => {
+        const container = document.querySelector(selector);
+        if (container) {
+            observer.observe(container, { 
+                childList: true, 
+                subtree: true, 
+                characterData: true,
+                attributes: true 
+            });
+        }
+    });
     
     // Inicializar tooltips al cargar
     setTimeout(initializeTooltips, 1500);
