@@ -232,6 +232,9 @@ class CvController extends AbstractActionController
             try {
                 $this->cvTable->saveCv($cv);
                 
+                // Procesar y guardar las skills
+                $this->processAndSaveSkills($cvId, $cv->getSkills());
+                
                 // Invalidar cache y marcar para una sola visita
                 if ($this->cacheService) {
                     // Invalidar cache
@@ -339,7 +342,12 @@ class CvController extends AbstractActionController
         $cv->exchangeArray($form->getData());
         
         try {
-            $this->cvTable->saveCv($cv);
+            // Guardar el CV primero
+            $cvId = $this->cvTable->saveCv($cv);
+            
+            // Procesar y guardar las skills
+            $this->processAndSaveSkills($cvId, $cv->getSkills());
+            
             $this->flashMessenger()->addSuccessMessage('CV creado exitosamente');
             return $this->redirect()->toRoute('cvs');
         } catch (\Exception $e) {
@@ -516,5 +524,63 @@ class CvController extends AbstractActionController
         $jsonResponse->setTerminal(true);
         
         return $jsonResponse;
+    }
+
+    /**
+     * Procesa las skills del CV, creando las nuevas si es necesario
+     * @param int $cvId ID del CV
+     * @param array $skillsData Array de skills del formulario
+     * @throws \Exception Si hay error en el procesamiento
+     */
+    private function processAndSaveSkills($cvId, $skillsData)
+    {
+        if (!$this->skillTable) {
+            return; // Si no hay skillTable, no procesar skills
+        }
+
+        if (empty($skillsData)) {
+            // Si no hay skills, eliminar todas las existentes del CV
+            $this->skillTable->saveSkillsForCv($cvId, []);
+            return;
+        }
+
+        $processedSkills = [];
+        
+        foreach ($skillsData as $skillData) {
+            try {
+                // Verificar si es una nueva skill o una existente
+                $skillId = $skillData['skill_id'] ?? null;
+                $skillName = trim($skillData['nombre'] ?? '');
+                $nivel = $skillData['nivel'] ?? 'basico';
+                
+                if (empty($skillName)) {
+                    continue; // Saltar skills sin nombre
+                }
+                
+                // Si es una skill nueva (ID temporal o no numérico)
+                if (empty($skillId) || !is_numeric($skillId) || $skillData['isNew'] ?? false) {
+                    // Buscar o crear la skill
+                    $skill = $this->skillTable->findOrCreateSkill($skillName);
+                    $finalSkillId = $skill['id'];
+                } else {
+                    // Skill existente, usar el ID
+                    $finalSkillId = (int) $skillId;
+                }
+                
+                $processedSkills[] = [
+                    'skill_id' => $finalSkillId,
+                    'nivel' => $nivel
+                ];
+                
+            } catch (\Exception $e) {
+                // Log del error pero continuar con las otras skills
+                error_log('Error procesando skill: ' . $e->getMessage());
+                continue;
+            }
+        }
+        
+        // Validar unicidad y guardar skills
+        $validSkills = $this->skillTable->validateUniqueSkillsForCv($cvId, $processedSkills);
+        $this->skillTable->saveSkillsForCv($cvId, $validSkills);
     }
 }

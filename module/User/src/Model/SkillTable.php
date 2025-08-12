@@ -194,5 +194,125 @@ class SkillTable
         
         return $skills;
     }
+
+    /**
+     * Verificar si una skill existe por nombre (case-insensitive)
+     * @param string $nombre Nombre de la skill
+     * @return array|null Array con datos de la skill o null si no existe
+     */
+    public function findSkillByName($nombre)
+    {
+        $nombre = trim($nombre);
+        if (empty($nombre)) {
+            return null;
+        }
+
+        $adapter = $this->tableGateway->getAdapter();
+        $sql = "SELECT id, nombre FROM skills 
+                WHERE LOWER(nombre) = LOWER(?) 
+                AND deletedAt = 0 
+                LIMIT 1";
+        
+        $statement = $adapter->createStatement($sql);
+        $result = $statement->execute([$nombre]);
+        $row = $result->current();
+        
+        return $row ? [
+            'id' => (int) $row['id'],
+            'nombre' => $row['nombre']
+        ] : null;
+    }
+
+    /**
+     * Crear una nueva skill si no existe, o devolver la existente
+     * @param string $nombre Nombre de la skill
+     * @return array Array con id y nombre de la skill
+     * @throws \Exception Si no se puede crear la skill
+     */
+    public function findOrCreateSkill($nombre)
+    {
+        $nombre = trim($nombre);
+        if (empty($nombre)) {
+            throw new \Exception('El nombre de la skill no puede estar vacío');
+        }
+
+        // Primero verificar si ya existe
+        $existingSkill = $this->findSkillByName($nombre);
+        if ($existingSkill) {
+            return $existingSkill;
+        }
+
+        // Si no existe, crear nueva skill
+        try {
+            $skillData = [
+                'nombre' => $nombre,
+                'deletedAt' => 0
+            ];
+            
+            $this->tableGateway->insert($skillData);
+            $newId = $this->tableGateway->getLastInsertValue();
+            
+            return [
+                'id' => (int) $newId,
+                'nombre' => $nombre
+            ];
+        } catch (\Exception $e) {
+            // Si hay error de duplicado (por constraint UNIQUE), intentar buscar de nuevo
+            // Esto puede pasar en condiciones de carrera
+            $existingSkill = $this->findSkillByName($nombre);
+            if ($existingSkill) {
+                return $existingSkill;
+            }
+            
+            throw new \Exception('No se pudo crear la skill: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Validar que las skills no estén duplicadas en un CV
+     * @param int $cvId ID del CV
+     * @param array $skillsData Array de skills a validar
+     * @return array Array de skills válidas sin duplicados
+     */
+    public function validateUniqueSkillsForCv($cvId, $skillsData)
+    {
+        if (empty($skillsData)) {
+            return [];
+        }
+
+        $validSkills = [];
+        $seenSkillIds = [];
+        
+        foreach ($skillsData as $skillData) {
+            $skillId = (int) $skillData['skill_id'];
+            
+            // Verificar que no esté duplicada en la lista actual
+            if (!in_array($skillId, $seenSkillIds)) {
+                $validSkills[] = $skillData;
+                $seenSkillIds[] = $skillId;
+            }
+        }
+        
+        return $validSkills;
+    }
+
+    /**
+     * Verificar si una skill ya está asignada a un CV
+     * @param int $cvId ID del CV
+     * @param int $skillId ID de la skill
+     * @return bool True si ya está asignada, false en caso contrario
+     */
+    public function isSkillAssignedToCv($cvId, $skillId)
+    {
+        $adapter = $this->tableGateway->getAdapter();
+        $sql = "SELECT COUNT(*) as count FROM skill_cv 
+                WHERE cv_id = ? AND skill_id = ? AND deletedAt = 0";
+        
+        $statement = $adapter->createStatement($sql);
+        $result = $statement->execute([(int) $cvId, (int) $skillId]);
+        $row = $result->current();
+        
+        return ($row && $row['count'] > 0);
+    }
 }
 

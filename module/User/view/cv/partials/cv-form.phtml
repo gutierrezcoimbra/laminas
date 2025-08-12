@@ -492,11 +492,28 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function setupSkillsInterface() {
-        // Initialize Select2 with AJAX
+        // Initialize Select2 with AJAX and ability to create new skills
         $('#skill-select2').select2({
-            placeholder: '-- Busque y seleccione una habilidad --',
+            placeholder: '-- Busque una habilidad o escriba una nueva --',
             allowClear: true,
+            tags: true, // Permite crear nuevas opciones
             minimumInputLength: 2, // Mínimo 2 caracteres para buscar
+            createTag: function (params) {
+                var term = $.trim(params.term);
+                
+                // No crear si está vacío o es muy corto
+                if (term === '' || term.length < 2) {
+                    return null;
+                }
+                
+                // Crear nueva opción con ID temporal negativo
+                return {
+                    id: 'new_' + term,
+                    text: term + ' (Nueva habilidad)',
+                    newTag: true,
+                    originalText: term
+                };
+            },
             ajax: {
                 url: '/cvs/search-skills',
                 dataType: 'json',
@@ -516,7 +533,8 @@ document.addEventListener('DOMContentLoaded', function() {
                             return {
                                 id: item.id,
                                 text: item.text,
-                                score: item.score
+                                score: item.score,
+                                newTag: false
                             };
                         }),
                         pagination: data.pagination
@@ -548,23 +566,36 @@ document.addEventListener('DOMContentLoaded', function() {
             // Mensajes personalizados
             language: {
                 inputTooShort: function(args) {
-                    return 'Escriba al menos ' + args.minimum + ' caracteres para buscar';
+                    return 'Escriba al menos ' + args.minimum + ' caracteres para buscar o crear';
                 },
                 searching: function() {
                     return 'Buscando habilidades...';
                 },
                 noResults: function() {
-                    return 'No se encontraron habilidades que coincidan con su búsqueda';
+                    return 'No se encontraron habilidades. Puede crear una nueva escribiendo su nombre.';
                 },
                 errorLoading: function() {
                     return 'Error al cargar los resultados';
                 }
             },
+            // Template para mostrar opciones
+            templateResult: function(option) {
+                if (!option.id) {
+                    return option.text;
+                }
+                
+                if (option.newTag) {
+                    return $('<span><i class="fas fa-plus-circle text-success me-1"></i>' + option.text + '</span>');
+                }
+                
+                return $('<span><i class="fas fa-tag text-primary me-1"></i>' + option.text + '</span>');
+            },
             // Fallback: cargar skills iniciales si están disponibles
             data: window.availableSkills && window.availableSkills.length > 0 ? 
                 window.availableSkills.map(skill => ({
                     id: skill.id,
-                    text: skill.nombre
+                    text: skill.nombre,
+                    newTag: false
                 })) : []
         });
         
@@ -582,8 +613,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const skillsInput = document.getElementById('skills-data');
         if (skillsInput.value) {
             try {
-                skillsData = JSON.parse(skillsInput.value) || [];
+                const parsedSkills = JSON.parse(skillsInput.value) || [];
+                // Asegurar que cada skill tenga las propiedades necesarias
+                skillsData = parsedSkills.map(skill => ({
+                    skill_id: skill.skill_id || skill.id || 0,
+                    nombre: skill.nombre || skill.name || '',
+                    nivel: skill.nivel || skill.level || 'basico',
+                    isNew: skill.isNew || false // Skills existentes no son nuevas
+                }));
             } catch (e) {
+                console.error('Error parsing existing skills:', e);
                 skillsData = [];
             }
         }
@@ -599,17 +638,35 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // Check if skill already exists
-        if (skillsData.find(s => s.skill_id == skillId)) {
-            alert('Esta habilidad ya está registrada');
+        // Determinar si es una nueva skill
+        const isNewSkill = skillId.toString().startsWith('new_');
+        let finalSkillName = skillText;
+        let finalSkillId = skillId;
+        
+        if (isNewSkill) {
+            // Extraer el nombre original de la nueva skill
+            const selectedOption = $('#skill-select2').select2('data')[0];
+            finalSkillName = selectedOption.originalText || skillText.replace(' (Nueva habilidad)', '');
+            // Para nuevas skills, usar ID temporal negativo único
+            finalSkillId = 'temp_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+        }
+        
+        // Verificar duplicados por nombre (case-insensitive)
+        const existingSkill = skillsData.find(s => 
+            s.nombre.toLowerCase() === finalSkillName.toLowerCase()
+        );
+        
+        if (existingSkill) {
+            alert('Esta habilidad ya está registrada en el CV');
             return;
         }
         
         // Add skill to data
         skillsData.push({
-            skill_id: parseInt(skillId),
-            nombre: skillText,
-            nivel: nivel
+            skill_id: finalSkillId,
+            nombre: finalSkillName,
+            nivel: nivel,
+            isNew: isNewSkill // Flag para identificar skills nuevas
         });
         
         // Reset form
@@ -639,7 +696,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 const row = `
                     <tr data-index="${index}">
                         <td class="skill-name-cell">
-                            <span class="skill-name-display">${skill.nombre}</span>
+                            <span class="skill-name-display">
+                                ${skill.isNew ? '<i class="fas fa-plus-circle text-success me-1" title="Nueva habilidad"></i>' : '<i class="fas fa-tag text-primary me-1"></i>'}
+                                ${skill.nombre}
+                                ${skill.isNew ? ' <small class="text-success">(Nueva)</small>' : ''}
+                            </span>
                             <select class="skill-name-edit skill-edit-input" style="display: none;">
                                 ${window.availableSkills.map(s => 
                                     `<option value="${s.id}" ${s.id == skill.skill_id ? 'selected' : ''}>${s.nombre}</option>`
@@ -708,10 +769,19 @@ document.addEventListener('DOMContentLoaded', function() {
         const newSkillName = row.find('.skill-name-edit option:selected').text();
         const newLevel = row.find('.skill-level-edit').val();
         
-        // Check if skill already exists (excluding current one)
-        const existingSkill = skillsData.find((s, i) => s.skill_id === newSkillId && i !== index);
-        if (existingSkill) {
-            alert('Esta habilidad ya está registrada');
+        // Check if skill already exists by ID (excluding current one)
+        const existingSkillById = skillsData.find((s, i) => s.skill_id === newSkillId && i !== index);
+        if (existingSkillById) {
+            alert('Esta habilidad ya está registrada en el CV');
+            return;
+        }
+        
+        // Check if skill already exists by name (case-insensitive, excluding current one)
+        const existingSkillByName = skillsData.find((s, i) => 
+            s.nombre.toLowerCase() === newSkillName.toLowerCase() && i !== index
+        );
+        if (existingSkillByName) {
+            alert('Una habilidad con este nombre ya está registrada en el CV');
             return;
         }
         
@@ -719,7 +789,8 @@ document.addEventListener('DOMContentLoaded', function() {
         skillsData[index] = {
             skill_id: newSkillId,
             nombre: newSkillName,
-            nivel: newLevel
+            nivel: newLevel,
+            isNew: skillsData[index].isNew || false // Mantener el flag original
         };
         
         editingSkillIndex = -1;

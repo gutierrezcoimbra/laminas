@@ -35,7 +35,7 @@ class CvTable
         
         $sql = "SELECT cvs.*, 
                 GROUP_CONCAT(
-                    CONCAT(skills.nombre, ':', skill_cv.nivel) 
+                    CONCAT(skills.id, ':', skills.nombre, ':', skill_cv.nivel) 
                     ORDER BY skills.nombre 
                     SEPARATOR '|'
                 ) as skills_data
@@ -58,9 +58,21 @@ class CvTable
                 $skillsArray = [];
                 $skillsData = explode('|', $cvData['skills_data']);
                 foreach ($skillsData as $skillData) {
-                    if (strpos($skillData, ':') !== false) {
-                        list($name, $level) = explode(':', $skillData, 2);
-                        $skillsArray[] = ['nombre' => $name, 'nivel' => $level];
+                    $parts = explode(':', $skillData);
+                    if (count($parts) >= 3) {
+                        // Formato: id:nombre:nivel
+                        $skillsArray[] = [
+                            'skill_id' => (int) $parts[0],
+                            'nombre' => $parts[1], 
+                            'nivel' => $parts[2]
+                        ];
+                    } elseif (count($parts) === 2) {
+                        // Formato legacy: nombre:nivel (sin ID)
+                        $skillsArray[] = [
+                            'skill_id' => 0,
+                            'nombre' => $parts[0], 
+                            'nivel' => $parts[1]
+                        ];
                     }
                 }
                 $cvData['skills'] = $skillsArray;
@@ -103,7 +115,7 @@ class CvTable
         
         $sql = "SELECT cvs.*, 
                 GROUP_CONCAT(
-                    CONCAT(skills.nombre, ':', skill_cv.nivel) 
+                    CONCAT(skills.id, ':', skills.nombre, ':', skill_cv.nivel) 
                     ORDER BY skills.nombre 
                     SEPARATOR '|'
                 ) as skills_data
@@ -126,9 +138,21 @@ class CvTable
         if (!empty($cvData['skills_data'])) {
             $skillsData = explode('|', $cvData['skills_data']);
             foreach ($skillsData as $skillData) {
-                if (strpos($skillData, ':') !== false) {
-                    list($name, $level) = explode(':', $skillData, 2);
-                    $skillsArray[] = ['nombre' => $name, 'nivel' => $level];
+                $parts = explode(':', $skillData);
+                if (count($parts) >= 3) {
+                    // Formato: id:nombre:nivel
+                    $skillsArray[] = [
+                        'skill_id' => (int) $parts[0],
+                        'nombre' => $parts[1], 
+                        'nivel' => $parts[2]
+                    ];
+                } elseif (count($parts) === 2) {
+                    // Formato legacy: nombre:nivel (sin ID)
+                    $skillsArray[] = [
+                        'skill_id' => 0,
+                        'nombre' => $parts[0], 
+                        'nivel' => $parts[1]
+                    ];
                 }
             }
         }
