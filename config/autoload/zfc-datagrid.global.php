@@ -3,10 +3,13 @@
 return [
     'view_manager' => [
         'template_map' => [
-            // Mapeo de plantillas si es necesario
+            // Plantilla personalizada de paginación Bootstrap para ZfcDatagrid
+            'zfc-datagrid/renderer/bootstrapTable/pagination' => __DIR__ . '/../../module/User/view/zfc-datagrid/renderer/bootstrapTable/pagination.phtml',
+            'zfc-datagrid/renderer/bootstrapTable/paginator' => __DIR__ . '/../../module/User/view/zfc-datagrid/renderer/bootstrapTable/paginator.phtml',
         ],
         'template_path_stack' => [
             __DIR__ . '/../../vendor/zfc-datagrid/zfc-datagrid/view',
+            __DIR__ . '/../../module/User/view', // Agregar el path de nuestras plantillas
         ],
     ],
     'view_helpers' => [
@@ -34,6 +37,11 @@ return [
         'renderer' => [
             'http' => [
                 'default' => 'bootstrapTable',
+            ],
+            'bootstrapTable' => [
+                'pagination' => [
+                    'template' => 'zfc-datagrid/renderer/bootstrapTable/pagination',
+                ],
             ],
         ],
         'settings' => [

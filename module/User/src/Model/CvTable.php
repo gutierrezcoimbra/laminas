@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace User\Model;
 
 use Laminas\Db\TableGateway\TableGateway;
+use Laminas\Db\Sql\Sql;
 use Laminas\Db\Sql\Select;
+use Laminas\Db\Sql\Expression;
 
 class CvTable
 {
@@ -30,24 +32,50 @@ class CvTable
     {
         $userId = (int) $userId;
         $adapter = $this->tableGateway->getAdapter();
+        $sql = new Sql($adapter);
         
-        $deletedCondition = $includeDeleted ? '' : 'AND cvs.deletedAt = 0';
+        $select = $sql->select('cvs');
         
-        $sql = "SELECT cvs.*, 
-                GROUP_CONCAT(
-                    CONCAT(skills.id, ':', skills.nombre, ':', skill_cv.nivel) 
+        // Seleccionar todas las columnas de cvs más el GROUP_CONCAT de skills
+        $select->columns([
+            '*',
+            'skills_data' => new Expression(
+                'GROUP_CONCAT(
+                    CONCAT(skills.id, ":", skills.nombre, ":", skill_cv.nivel) 
                     ORDER BY skills.nombre 
-                    SEPARATOR '|'
-                ) as skills_data
-                FROM cvs 
-                LEFT JOIN skill_cv ON cvs.id = skill_cv.cv_id AND skill_cv.deletedAt = 0
-                LEFT JOIN skills ON skill_cv.skill_id = skills.id AND skills.deletedAt = 0
-                WHERE cvs.userId = ? $deletedCondition
-                GROUP BY cvs.id
-                ORDER BY cvs.createdAt DESC";
+                    SEPARATOR "|"
+                )'
+            )
+        ]);
         
-        $statement = $adapter->createStatement($sql);
-        $result = $statement->execute([$userId]);
+        // LEFT JOINs para las skills
+        $select->join(
+            'skill_cv',
+            'cvs.id = skill_cv.cv_id AND skill_cv.deletedAt = 0',
+            [],
+            Select::JOIN_LEFT
+        );
+        
+        $select->join(
+            'skills',
+            'skill_cv.skill_id = skills.id AND skills.deletedAt = 0',
+            [],
+            Select::JOIN_LEFT
+        );
+        
+        // WHERE conditions
+        $select->where(['cvs.userId' => $userId]);
+        
+        if (!$includeDeleted) {
+            $select->where(['cvs.deletedAt' => 0]);
+        }
+        
+        // GROUP BY y ORDER BY
+        $select->group(new Expression('cvs.id'));
+        $select->order(['cvs.createdAt DESC']);
+        
+        $statement = $sql->prepareStatementForSqlObject($select);
+        $result = $statement->execute();
         
         $cvs = [];
         foreach ($result as $row) {
@@ -111,6 +139,7 @@ class CvTable
         $id = (int) $id;
         $adapter = $this->tableGateway->getAdapter();
         
+        // Usar SQL directo con parámetros seguros pero manteniendo la estructura de Laminas
         $deletedCondition = $includeDeleted ? '' : 'AND cvs.deletedAt = 0';
         
         $sql = "SELECT cvs.*, 

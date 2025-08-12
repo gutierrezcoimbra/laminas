@@ -1,0 +1,276 @@
+<?php
+/**
+ * Toolbar personalizada para el datagrid de skills
+ * Incluye botón para agregar nueva skill con componentes Bootstrap mejorados
+ */
+?>
+
+<!-- Toolbar mejorada con Bootstrap -->
+<div class="w-100 mb-4" style="margin-left: 15px; margin-right: 15px; width: calc(100% - 30px);">
+    <div class="card shadow-sm border-0">
+        <div class="card-body py-3">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <!-- Botón para agregar nueva skill con badge de contador -->
+                    <div class="btn-toolbar" role="toolbar">
+                        <div class="btn-group me-3" role="group">
+                            <a href="<?= $this->url('skill/add') ?>" class="btn btn-warning shadow-sm">
+                                <i class="fas fa-plus-circle me-2"></i>
+                                <span class="fw-semibold">Nueva Skill</span>
+                            </a>
+                        </div>
+                        
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="d-flex justify-content-end align-items-center">
+                        <!-- Botones de exportación mejorados -->
+                        <?php if (isset($exportButtons) && !empty($exportButtons)): ?>
+                            <div class="btn-group me-3" role="group">
+                                <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                                    <i class="fas fa-download me-1"></i> Exportar
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <?= $exportButtons ?>
+                                </ul>
+                            </div>
+                        <?php endif; ?>
+                        
+                        <!-- Botón de actualizar -->
+                        <button type="button" class="btn btn-outline-warning" onclick="location.reload()" title="Actualizar datos">
+                            <i class="fas fa-sync-alt"></i>
+                            <span class="d-none d-sm-inline ms-1">Actualizar</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Alert informativo opcional -->
+<div class="alert alert-info alert-dismissible fade show d-none" role="alert" id="datagrid-info">
+    <i class="fas fa-info-circle me-2"></i>
+    <strong>Información:</strong> <span id="alert-message">Datos cargados correctamente.</span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+
+<style>
+/* Estilos adicionales para la toolbar mejorada */
+.card {
+    border-radius: 12px !important;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%) !important;
+}
+
+.btn-warning.shadow-sm {
+    border-radius: 8px !important;
+    background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%) !important;
+    border: none !important;
+    transition: all 0.3s ease !important;
+    color: #212529 !important;
+}
+
+.btn-warning.shadow-sm:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 25px rgba(255,193,7,0.3) !important;
+    color: #212529 !important;
+}
+
+.badge.bg-info {
+    background: linear-gradient(135deg, #17a2b8 0%, #138496 100%) !important;
+    border-radius: 20px !important;
+    animation: pulse-subtle 2s infinite !important;
+}
+
+@keyframes pulse-subtle {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.btn-outline-warning, .btn-outline-secondary {
+    border-radius: 6px !important;
+    transition: all 0.2s ease !important;
+}
+
+.btn-outline-warning:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(255,193,7,0.2) !important;
+}
+
+/* Hacer que el datagrid ocupe toda la pantalla con márgenes de 15px */
+.container, .container-fluid, .container-lg, .container-md, .container-sm, .container-xl {
+    max-width: none !important;
+    width: calc(100% - 30px) !important;
+    margin-left: 15px !important;
+    margin-right: 15px !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+.zfcDatagrid-container {
+    width: 100% !important;
+    max-width: none !important;
+    margin-left: 15px !important;
+    margin-right: 15px !important;
+}
+
+.table-responsive {
+    width: 100% !important;
+    overflow-x: auto !important;
+}
+
+.table {
+    width: 100% !important;
+    min-width: 100% !important;
+}
+
+/* Aplicar márgenes al datagrid completo */
+.zfcDatagrid {
+    margin-left: 15px !important;
+    margin-right: 15px !important;
+    width: calc(100% - 30px) !important;
+}
+
+.zfcDatagrid table {
+    width: 100% !important;
+    max-width: none !important;
+    table-layout: fixed !important;
+}
+
+.zfcDatagrid .table-responsive {
+    overflow-x: auto !important;
+    width: 100% !important;
+}
+
+/* Asegurar que el body y html ocupen todo el ancho */
+body, html {
+    width: 100% !important;
+    overflow-x: auto !important;
+}
+
+/* ========== ESTILOS ESPECÍFICOS PARA PAGINACIÓN DE SKILLS ========== */
+
+.zfcDatagrid .pagination-wrapper {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffffff 100%) !important;
+    border: 2px solid #ffc107 !important;
+}
+
+.zfcDatagrid .pagination .page-item.active .page-link {
+    background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%) !important;
+    border-color: #ffc107 !important;
+    color: #212529 !important;
+}
+
+.zfcDatagrid .pagination .page-link:hover {
+    color: #e0a800 !important;
+    border-color: #ffc107 !important;
+}
+
+.zfcDatagrid .pagination-info .badge {
+    background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%) !important;
+    color: #212529 !important;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Función para corregir enlaces de botones
+    function fixActionButtons() {
+        const rows = document.querySelectorAll('tbody tr');
+        rows.forEach(function(row) {
+            const firstCell = row.querySelector('td:first-child');
+            if (firstCell) {
+                const skillId = firstCell.textContent.trim();
+                
+                // Corregir enlaces si hay un ID válido
+                if (skillId && /^\d+$/.test(skillId)) {
+                    const links = row.querySelectorAll('a[href*=":id"]');
+                    links.forEach(function(link) {
+                        link.href = link.href.replace(':id', skillId);
+                    });
+                }
+            }
+        });
+    }
+    
+    // Función para contar skills y actualizar badge
+    function updateSkillCount() {
+        const rows = document.querySelectorAll('tbody tr');
+        const count = rows.length;
+        const countElement = document.getElementById('total-skills-count');
+        if (countElement) {
+            countElement.textContent = `Total: ${count} skill${count !== 1 ? 's' : ''}`;
+        }
+    }
+    
+    // Función para mostrar alertas informativas
+    function showInfo(message, type = 'info') {
+        const alertElement = document.getElementById('datagrid-info');
+        const messageElement = document.getElementById('alert-message');
+        
+        if (alertElement && messageElement) {
+            alertElement.className = `alert alert-${type} alert-dismissible fade show`;
+            messageElement.textContent = message;
+            alertElement.classList.remove('d-none');
+            
+            // Auto-ocultar después de 3 segundos
+            setTimeout(() => {
+                alertElement.classList.add('d-none');
+            }, 3000);
+        }
+    }
+    
+    // Ejecutar funciones iniciales
+    fixActionButtons();
+    updateSkillCount();
+    
+    // Mostrar mensaje de carga exitosa
+    setTimeout(() => {
+        showInfo('Datos de skills cargados correctamente.');
+    }, 500);
+    
+    // También ejecutar después de un pequeño retraso por si el contenido se carga dinámicamente
+    setTimeout(() => {
+        fixActionButtons();
+        updateSkillCount();
+    }, 1000);
+    
+    // Observar cambios en la tabla para actualizar el contador
+    const observer = new MutationObserver((mutations) => {
+        let shouldUpdate = false;
+        mutations.forEach(mutation => {
+            if (mutation.type === 'childList' || mutation.type === 'characterData') {
+                shouldUpdate = true;
+            }
+        });
+        
+        if (shouldUpdate) {
+            setTimeout(() => {
+                updateSkillCount();
+                fixActionButtons();
+            }, 100);
+        }
+    });
+    
+    // Observar múltiples contenedores
+    const containers = [
+        '.zfcDatagrid-container',
+        '.table-responsive',
+        'tbody',
+        '.zfcDatagrid'
+    ];
+    
+    containers.forEach(selector => {
+        const container = document.querySelector(selector);
+        if (container) {
+            observer.observe(container, { 
+                childList: true, 
+                subtree: true, 
+                characterData: true,
+                attributes: true 
+            });
+        }
+    });
+});
+</script>

@@ -186,6 +186,69 @@ return [
                     ],
                 ],
             ],
+            // Rutas para Skills
+            'skill' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/skill',
+                    'defaults' => [
+                        'controller' => Controller\SkillController::class,
+                        'action' => 'index',
+                    ],
+                ],
+                'may_terminate' => true,
+                'child_routes' => [
+                    'view' => [
+                        'type' => Segment::class,
+                        'options' => [
+                            'route' => '/view/:id',
+                            'defaults' => [
+                                'controller' => Controller\SkillController::class,
+                                'action' => 'view',
+                            ],
+                            'constraints' => [
+                                'id' => '[0-9]+',
+                            ],
+                        ],
+                    ],
+                    'add' => [
+                        'type' => Literal::class,
+                        'options' => [
+                            'route' => '/add',
+                            'defaults' => [
+                                'controller' => Controller\SkillController::class,
+                                'action' => 'add',
+                            ],
+                        ],
+                    ],
+                    'edit' => [
+                        'type' => Segment::class,
+                        'options' => [
+                            'route' => '/edit/:id',
+                            'defaults' => [
+                                'controller' => Controller\SkillController::class,
+                                'action' => 'edit',
+                            ],
+                            'constraints' => [
+                                'id' => '[0-9]+',
+                            ],
+                        ],
+                    ],
+                    'delete' => [
+                        'type' => Segment::class,
+                        'options' => [
+                            'route' => '/delete/:id',
+                            'defaults' => [
+                                'controller' => Controller\SkillController::class,
+                                'action' => 'delete',
+                            ],
+                            'constraints' => [
+                                'id' => '[0-9]+',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [
@@ -201,6 +264,10 @@ return [
                 $skillTable = $container->get(\User\Model\SkillTable::class);
                 $cacheService = $container->get(\User\Service\CvCacheService::class);
                 return new \User\Controller\CvController($cvTable, $userTable, $skillTable, $cacheService);
+            },
+            Controller\SkillController::class => function($container) {
+                $skillTable = $container->get(\User\Model\SkillTable::class);
+                return new \User\Controller\SkillController($skillTable);
             },
         ],
     ],
@@ -271,6 +338,9 @@ return [
             'view-helpers/cv-display' => __DIR__ . '/../view/view-helpers/cv-display.phtml',
             'zfc-datagrid/toolbar/custom-toolbar' => __DIR__ . '/../view/zfc-datagrid/toolbar/custom-toolbar.phtml',
             'zfc-datagrid/toolbar/cv-toolbar' => __DIR__ . '/../view/zfc-datagrid/toolbar/cv-toolbar.phtml',
+            'zfc-datagrid/toolbar/skill-toolbar' => __DIR__ . '/../view/zfc-datagrid/toolbar/skill-toolbar.phtml',
+            'zfc-datagrid/renderer/bootstrapTable/pagination' => __DIR__ . '/../view/zfc-datagrid/renderer/bootstrapTable/pagination.phtml',
+            'zfc-datagrid/renderer/bootstrapTable/paginator' => __DIR__ . '/../view/zfc-datagrid/renderer/bootstrapTable/paginator.phtml',
         ],
     ],
     'view_helpers' => [

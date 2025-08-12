@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace User\Model;
 
 use Laminas\Db\TableGateway\TableGateway;
+use Laminas\Db\Sql\Sql;
+use Laminas\Db\Sql\Select;
+use Laminas\Db\Sql\Expression;
 
 class SkillTable
 {
@@ -13,6 +16,11 @@ class SkillTable
     public function __construct(TableGateway $tableGateway)
     {
         $this->tableGateway = $tableGateway;
+    }
+
+    public function getTableGateway()
+    {
+        return $this->tableGateway;
     }
 
     public function fetchAll()
@@ -75,21 +83,35 @@ class SkillTable
     public function getCvSkills($cvId)
     {
         $adapter = $this->tableGateway->getAdapter();
-        $sql = "SELECT s.id as skill_id, s.nombre, sc.nivel
-                FROM skill_cv sc
-                JOIN skills s ON sc.skill_id = s.id 
-                WHERE sc.cv_id = ? 
-                AND sc.deletedAt = 0 
-                AND s.deletedAt = 0
-                ORDER BY s.nombre";
+        $sql = new Sql($adapter);
         
-        $statement = $adapter->createStatement($sql);
-        $result = $statement->execute([(int) $cvId]);
+        $select = $sql->select('skill_cv');
+        $select->columns(['nivel']);
+        
+        $select->join(
+            'skills',
+            'skill_cv.skill_id = skills.id',
+            [
+                'skill_id' => 'id',
+                'nombre'
+            ]
+        );
+        
+        $select->where([
+            'skill_cv.cv_id' => (int) $cvId,
+            'skill_cv.deletedAt' => 0,
+            'skills.deletedAt' => 0
+        ]);
+        
+        $select->order(['skills.nombre ASC']);
+        
+        $statement = $sql->prepareStatementForSqlObject($select);
+        $result = $statement->execute();
         
         $skills = [];
         foreach ($result as $row) {
             $skills[] = [
-                'skill_id' => $row['skill_id'],
+                'skill_id' => (int) $row['skill_id'],
                 'nombre' => $row['nombre'],
                 'nivel' => $row['nivel']
             ];
@@ -106,8 +128,6 @@ class SkillTable
      */
     public function searchSkillsFulltext($searchTerm, $limit = 20)
     {
-        $adapter = $this->tableGateway->getAdapter();
-        
         // Limpiar y preparar términos de búsqueda
         $searchTerm = trim($searchTerm);
         if (empty($searchTerm)) {
@@ -130,19 +150,34 @@ class SkillTable
         
         $booleanQuery = implode(' ', $booleanTerms);
         
-        $sql = "SELECT 
-                    id, 
-                    nombre,
-                    MATCH (nombre) AGAINST (? IN BOOLEAN MODE) AS score
-                FROM skills 
-                WHERE deletedAt = 0 
-                AND MATCH (nombre) AGAINST (? IN BOOLEAN MODE) > 0
-                ORDER BY score DESC, nombre ASC
-                LIMIT ?";
-        
         try {
-            $statement = $adapter->createStatement($sql);
-            $result = $statement->execute([$booleanQuery, $booleanQuery, (int) $limit]);
+            $adapter = $this->tableGateway->getAdapter();
+            $sql = new Sql($adapter);
+            
+            $select = $sql->select('skills');
+            $select->columns([
+                'id',
+                'nombre',
+                'score' => new Expression('MATCH (nombre) AGAINST (? IN BOOLEAN MODE)', [$booleanQuery])
+            ]);
+            
+            $select->where([
+                'deletedAt' => 0
+            ]);
+            
+            $select->where(
+                new Expression('MATCH (nombre) AGAINST (? IN BOOLEAN MODE) > 0', [$booleanQuery])
+            );
+            
+            $select->order([
+                new Expression('score DESC'),
+                'nombre ASC'
+            ]);
+            
+            $select->limit((int) $limit);
+            
+            $statement = $sql->prepareStatementForSqlObject($select);
+            $result = $statement->execute();
             
             $skills = [];
             foreach ($result as $row) {
@@ -169,19 +204,26 @@ class SkillTable
     private function searchSkillsLike($searchTerm, $limit = 20)
     {
         $adapter = $this->tableGateway->getAdapter();
+        $sql = new Sql($adapter);
         
-        $sql = "SELECT 
-                    id, 
-                    nombre,
-                    1.0 AS score
-                FROM skills 
-                WHERE deletedAt = 0 
-                AND nombre LIKE ?
-                ORDER BY nombre ASC
-                LIMIT ?";
+        $select = $sql->select('skills');
+        $select->columns([
+            'id',
+            'nombre',
+            'score' => new Expression('1.0')
+        ]);
         
-        $statement = $adapter->createStatement($sql);
-        $result = $statement->execute(['%' . $searchTerm . '%', (int) $limit]);
+        $select->where([
+            'deletedAt' => 0
+        ]);
+        
+        $select->where->like('nombre', '%' . $searchTerm . '%');
+        
+        $select->order(['nombre ASC']);
+        $select->limit((int) $limit);
+        
+        $statement = $sql->prepareStatementForSqlObject($select);
+        $result = $statement->execute();
         
         $skills = [];
         foreach ($result as $row) {
@@ -208,13 +250,23 @@ class SkillTable
         }
 
         $adapter = $this->tableGateway->getAdapter();
-        $sql = "SELECT id, nombre FROM skills 
-                WHERE LOWER(nombre) = LOWER(?) 
-                AND deletedAt = 0 
-                LIMIT 1";
+        $sql = new Sql($adapter);
         
-        $statement = $adapter->createStatement($sql);
-        $result = $statement->execute([$nombre]);
+        $select = $sql->select('skills');
+        $select->columns(['id', 'nombre']);
+        
+        $select->where([
+            'deletedAt' => 0
+        ]);
+        
+        $select->where(
+            new Expression('LOWER(nombre) = LOWER(?)', [$nombre])
+        );
+        
+        $select->limit(1);
+        
+        $statement = $sql->prepareStatementForSqlObject($select);
+        $result = $statement->execute();
         $row = $result->current();
         
         return $row ? [

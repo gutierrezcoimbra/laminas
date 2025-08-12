@@ -1,0 +1,76 @@
+<?php
+/**
+ * Plantilla de paginación Bootstrap SIMPLE para ZfcDatagrid
+ * Versión de prueba para verificar que funciona
+ */
+?>
+
+<div style="background: red; color: white; padding: 20px; text-align: center; margin: 20px 0; border-radius: 10px;">
+    <h3>🎉 ¡PAGINACIÓN BOOTSTRAP FUNCIONANDO! 🎉</h3>
+    <p>Esta es la plantilla personalizada de paginación</p>
+    
+    <?php if (isset($paginator) && $paginator): ?>
+        <p>Página actual: <?= $paginator->getCurrentPageNumber() ?></p>
+        <p>Total de páginas: <?= count($paginator) ?></p>
+        <p>Total de items: <?= $paginator->getTotalItemCount() ?></p>
+    <?php endif; ?>
+    
+    <!-- Paginación Bootstrap básica -->
+    <?php if (isset($paginator) && $paginator && count($paginator) > 1): ?>
+        <nav aria-label="Paginación">
+            <ul class="pagination justify-content-center">
+                
+                <!-- Página anterior -->
+                <?php if ($paginator->getPreviousPage()): ?>
+                    <li class="page-item">
+                        <a class="page-link" href="<?= $this->url(null, [], ['query' => array_merge($this->params()->fromQuery(), ['page' => $paginator->getPreviousPage()])], true) ?>">
+                            Anterior
+                        </a>
+                    </li>
+                <?php endif; ?>
+                
+                <!-- Páginas -->
+                <?php foreach ($paginator->getPages()->pagesInRange as $page): ?>
+                    <li class="page-item <?= $page == $paginator->getCurrentPageNumber() ? 'active' : '' ?>">
+                        <a class="page-link" href="<?= $this->url(null, [], ['query' => array_merge($this->params()->fromQuery(), ['page' => $page])], true) ?>">
+                            <?= $page ?>
+                        </a>
+                    </li>
+                <?php endforeach; ?>
+                
+                <!-- Página siguiente -->
+                <?php if ($paginator->getNextPage()): ?>
+                    <li class="page-item">
+                        <a class="page-link" href="<?= $this->url(null, [], ['query' => array_merge($this->params()->fromQuery(), ['page' => $paginator->getNextPage()])], true) ?>">
+                            Siguiente
+                        </a>
+                    </li>
+                <?php endif; ?>
+                
+            </ul>
+        </nav>
+    <?php endif; ?>
+</div>
+
+<style>
+.page-link {
+    background: #007bff !important;
+    color: white !important;
+    border: 1px solid #007bff !important;
+    padding: 10px 15px !important;
+    margin: 0 2px !important;
+    border-radius: 5px !important;
+}
+
+.page-link:hover {
+    background: #0056b3 !important;
+    color: white !important;
+    border-color: #0056b3 !important;
+}
+
+.page-item.active .page-link {
+    background: #28a745 !important;
+    border-color: #28a745 !important;
+    color: white !important;
+}
+</style>
