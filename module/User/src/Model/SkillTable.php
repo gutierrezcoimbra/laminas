@@ -23,23 +23,65 @@ class SkillTable
         return $this->tableGateway;
     }
 
-    public function fetchAll()
-    {
-        return $this->tableGateway->select(['deletedAt' => 0]);
-    }
-
     public function getSkill($id)
     {
         $id = (int) $id;
         $rowset = $this->tableGateway->select(['id' => $id, 'deletedAt' => 0]);
         $row = $rowset->current();
-        
         if (!$row) {
-            throw new \Exception("No se encontró la skill con id $id");
+            throw new \Exception("No se pudo encontrar la skill con id $id");
         }
-        
         return $row;
     }
+
+    public function saveSkill(Skill $skill)
+    {
+        $data = $skill->getArrayCopy();
+        
+        // Remover campos que no deben ser actualizados directamente
+        unset($data['createdAt']);
+        
+        $id = (int) $skill->getId();
+        
+        if ($id === 0) {
+            // Crear nueva skill
+            $data['createdAt'] = date('Y-m-d H:i:s');
+            unset($data['id']); // Remover ID para autoincrement
+            $this->tableGateway->insert($data);
+            return $this->tableGateway->getLastInsertValue();
+        }
+        
+        // Actualizar skill existente
+        $data['updatedAt'] = date('Y-m-d H:i:s');
+        
+        if ($this->getSkill($id)) {
+            $this->tableGateway->update($data, ['id' => $id]);
+            return $id;
+        }
+        
+        throw new \Exception('La skill no existe');
+    }
+
+    public function deleteSkill($id)
+    {
+        $id = (int) $id;
+        
+        // Soft delete: marcar como eliminado
+        $this->tableGateway->update(
+            [
+                'deletedAt' => 1,
+                'updatedAt' => date('Y-m-d H:i:s')
+            ], 
+            ['id' => $id]
+        );
+    }
+
+    public function fetchAll()
+    {
+        return $this->tableGateway->select(['deletedAt' => 0]);
+    }
+
+   
 
     public function saveSkillsForCv($cvId, $skillsData)
     {

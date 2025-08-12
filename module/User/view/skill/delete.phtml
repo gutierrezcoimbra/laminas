@@ -1,0 +1,64 @@
+<?php
+$title = 'Eliminar Skill';
+$this->headTitle($title);
+
+// Obtener el nombre de la skill de manera segura
+$skillName = '';
+if ($this->skill) {
+    if (method_exists($this->skill, 'getNombre')) {
+        $skillName = $this->skill->getNombre();
+    } elseif (isset($this->skill->nombre)) {
+        $skillName = $this->skill->nombre;
+    } elseif (is_array($this->skill) && isset($this->skill['nombre'])) {
+        $skillName = $this->skill['nombre'];
+    }
+}
+?>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h3 class="mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <?= $title ?>
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <?= $this->partial('user/partials/flash-messages'); ?>
+                    
+                    <div class="alert alert-warning">
+                        <i class="fas fa-warning me-2"></i>
+                        <strong>¿Está seguro que desea eliminar esta skill?</strong>
+                    </div>
+                    
+                    <div class="skill-details mb-4">
+                        <h5>Detalles de la Skill:</h5>
+                        <ul class="list-unstyled">
+                            <li><strong>Nombre:</strong> <?= $this->escapeHtml($skillName) ?></li>
+                        </ul>
+                    </div>
+                    
+                    <p class="text-muted">
+                        <small>
+                            <i class="fas fa-info-circle me-1"></i>
+                            Esta acción no se puede deshacer. La skill será marcada como eliminada.
+                        </small>
+                    </p>
+                    
+                    <form action="<?= $this->url('skill/delete', ['id' => $this->id]) ?>" method="post">
+                        <input type="hidden" name="id" value="<?= (int) $this->id ?>" />
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="<?= $this->url('skill') ?>" class="btn btn-secondary me-md-2">
+                                <i class="fas fa-times me-1"></i>
+                                Cancelar
+                            </a>
+                            <input type="submit" name="del" value="Sí" class="btn btn-danger" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

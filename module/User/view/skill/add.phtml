@@ -1,0 +1,11 @@
+<?php
+$title = 'Agregar Skill';
+$this->headTitle($title);
+?>
+
+<?= $this->partial('skill/partials/skill-form', [
+    'title' => $title,
+    'form' => $this->form,
+    'errors' => $this->errors ?? [],
+    'actionUrl' => $this->url('skill/add')
+]); ?>

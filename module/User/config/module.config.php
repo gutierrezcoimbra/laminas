@@ -341,6 +341,14 @@ return [
             'zfc-datagrid/toolbar/skill-toolbar' => __DIR__ . '/../view/zfc-datagrid/toolbar/skill-toolbar.phtml',
             'zfc-datagrid/renderer/bootstrapTable/pagination' => __DIR__ . '/../view/zfc-datagrid/renderer/bootstrapTable/pagination.phtml',
             'zfc-datagrid/renderer/bootstrapTable/paginator' => __DIR__ . '/../view/zfc-datagrid/renderer/bootstrapTable/paginator.phtml',
+            // Mapeo de vistas de skill
+            'user/skill/add' => __DIR__ . '/../view/skill/add.phtml',
+            'user/skill/edit' => __DIR__ . '/../view/skill/edit.phtml',
+            'user/skill/view' => __DIR__ . '/../view/skill/view.phtml',
+            'user/skill/delete' => __DIR__ . '/../view/skill/delete.phtml',
+            // Mapeo de partials de skill
+            'skill/partials/skill-form' => __DIR__ . '/../view/skill/partials/skill-form.phtml',
+            'skill/partials/form-fields' => __DIR__ . '/../view/skill/partials/form-fields.phtml',
         ],
     ],
     'view_helpers' => [

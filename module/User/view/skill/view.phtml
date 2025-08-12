@@ -1,0 +1,118 @@
+<?php
+$title = 'Ver Skill';
+$this->headTitle($title);
+
+// Obtener datos de la skill de manera segura
+$skillName = '';
+$skillId = '';
+$createdAt = '';
+$updatedAt = '';
+
+if ($this->skill) {
+    if (method_exists($this->skill, 'getNombre')) {
+        $skillName = $this->skill->getNombre();
+        $skillId = $this->skill->getId();
+        $createdAt = $this->skill->getCreatedAt();
+        $updatedAt = $this->skill->getUpdatedAt();
+    } elseif (isset($this->skill->nombre)) {
+        $skillName = $this->skill->nombre;
+        $skillId = $this->skill->id ?? '';
+        $createdAt = $this->skill->createdAt ?? '';
+        $updatedAt = $this->skill->updatedAt ?? '';
+    } elseif (is_array($this->skill)) {
+        $skillName = $this->skill['nombre'] ?? '';
+        $skillId = $this->skill['id'] ?? '';
+        $createdAt = $this->skill['createdAt'] ?? '';
+        $updatedAt = $this->skill['updatedAt'] ?? '';
+    }
+}
+?>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="mb-3">
+                <a href="<?= $this->url('skill') ?>" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver a Skills
+                </a>
+                <a href="<?= $this->url('skill/edit', ['id' => $skillId]) ?>" class="btn btn-primary">
+                    <i class="fas fa-edit"></i> Editar Skill
+                </a>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="mb-0">
+                        <i class="fas fa-cogs me-2"></i>
+                        <?= $this->escapeHtml($skillName) ?>
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <?= $this->partial('user/partials/flash-messages'); ?>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Información Básica</h5>
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td><strong>ID:</strong></td>
+                                    <td><?= $this->escapeHtml($skillId) ?></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Nombre:</strong></td>
+                                    <td><?= $this->escapeHtml($skillName) ?></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Información de Sistema</h5>
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td><strong>Creado:</strong></td>
+                                    <td>
+                                        <?php if ($createdAt): ?>
+                                            <?php if ($createdAt instanceof DateTime): ?>
+                                                <?= $createdAt->format('d/m/Y H:i:s') ?>
+                                            <?php else: ?>
+                                                <?= date('d/m/Y H:i:s', strtotime($createdAt)) ?>
+                                            <?php endif; ?>
+                                        <?php else: ?>
+                                            <span class="text-muted">No disponible</span>
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Actualizado:</strong></td>
+                                    <td>
+                                        <?php if ($updatedAt): ?>
+                                            <?php if ($updatedAt instanceof DateTime): ?>
+                                                <?= $updatedAt->format('d/m/Y H:i:s') ?>
+                                            <?php else: ?>
+                                                <?= date('d/m/Y H:i:s', strtotime($updatedAt)) ?>
+                                            <?php endif; ?>
+                                        <?php else: ?>
+                                            <span class="text-muted">No disponible</span>
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="<?= $this->url('skill/edit', ['id' => $skillId]) ?>" class="btn btn-primary me-md-2">
+                                <i class="fas fa-edit me-1"></i>
+                                Editar
+                            </a>
+                            <a href="<?= $this->url('skill/delete', ['id' => $skillId]) ?>" class="btn btn-danger">
+                                <i class="fas fa-trash me-1"></i>
+                                Eliminar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

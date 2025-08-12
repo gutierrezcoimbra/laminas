@@ -79,6 +79,150 @@ class SkillController extends AbstractActionController
         return $datagrid->getResponse();
     }
 
+    public function addAction()
+    {
+        $form = new \User\Form\SkillForm($this->skillTable);
+        $form->get('submit')->setValue('Crear Skill');
+        
+        $request = $this->getRequest();
+        
+        if (!$request->isPost()) {
+            return new ViewModel(['form' => $form]);
+        }
+        
+        $postData = $request->getPost();
+        $form->setData($postData);
+        
+        if (!$form->isValid()) {
+            return new ViewModel([
+                'form' => $form,
+                'errors' => $form->getMessages(),
+            ]);
+        }
+        
+        $formData = $form->getData();
+        $skill = new \User\Model\Skill();
+        $skill->exchangeArray($formData);
+        
+        try {
+            $this->skillTable->saveSkill($skill);
+            $this->flashMessenger()->addSuccessMessage('Skill creada exitosamente.');
+        } catch (\Exception $e) {
+            error_log('Error saving skill: ' . $e->getMessage());
+            $this->flashMessenger()->addErrorMessage('Error al crear la skill: ' . $e->getMessage());
+        }
+        
+        return $this->redirect()->toRoute('skill');
+    }
+
+    public function editAction()
+    {
+        $id = (int) $this->params()->fromRoute('id', 0);
+        
+        if ($id === 0) {
+            return $this->redirect()->toRoute('skill');
+        }
+        
+        try {
+            $skill = $this->skillTable->getSkill($id);
+        } catch (\Exception $e) {
+            $this->flashMessenger()->addErrorMessage('Skill no encontrada.');
+            return $this->redirect()->toRoute('skill');
+        }
+        
+        $form = new \User\Form\SkillForm($this->skillTable, $id);
+        $form->bind($skill);
+        $form->get('submit')->setValue('Actualizar Skill');
+        
+        $request = $this->getRequest();
+        
+        if (!$request->isPost()) {
+            return new ViewModel([
+                'id' => $id,
+                'form' => $form,
+            ]);
+        }
+        
+        $form->setData($request->getPost());
+        
+        if (!$form->isValid()) {
+            return new ViewModel([
+                'id' => $id,
+                'form' => $form,
+                'errors' => $form->getMessages(),
+            ]);
+        }
+        
+        try {
+            $this->skillTable->saveSkill($skill);
+            $this->flashMessenger()->addSuccessMessage('Skill actualizada exitosamente.');
+        } catch (\Exception $e) {
+            error_log('Error updating skill: ' . $e->getMessage());
+            $this->flashMessenger()->addErrorMessage('Error al actualizar la skill: ' . $e->getMessage());
+        }
+        
+        return $this->redirect()->toRoute('skill');
+    }
+
+    public function deleteAction()
+    {
+        $id = (int) $this->params()->fromRoute('id', 0);
+        
+        if ($id === 0) {
+            return $this->redirect()->toRoute('skill');
+        }
+        
+        $request = $this->getRequest();
+        
+        if ($request->isPost()) {
+            $del = $request->getPost('del', 'No');
+            
+            if ($del === 'Sí') {
+                $id = (int) $request->getPost('id');
+                
+                try {
+                    $this->skillTable->deleteSkill($id);
+                    $this->flashMessenger()->addSuccessMessage('Skill eliminada exitosamente.');
+                } catch (\Exception $e) {
+                    error_log('Error deleting skill: ' . $e->getMessage());
+                    $this->flashMessenger()->addErrorMessage('Error al eliminar la skill: ' . $e->getMessage());
+                }
+            }
+            
+            return $this->redirect()->toRoute('skill');
+        }
+        
+        try {
+            $skill = $this->skillTable->getSkill($id);
+            return new ViewModel([
+                'id' => $id,
+                'skill' => $skill,
+            ]);
+        } catch (\Exception $e) {
+            $this->flashMessenger()->addErrorMessage('Skill no encontrada.');
+            return $this->redirect()->toRoute('skill');
+        }
+    }
+
+    public function viewAction()
+    {
+        $id = (int) $this->params()->fromRoute('id', 0);
+        
+        if ($id === 0) {
+            return $this->redirect()->toRoute('skill');
+        }
+        
+        try {
+            $skill = $this->skillTable->getSkill($id);
+            return new ViewModel([
+                'skill' => $skill,
+            ]);
+        } catch (\Exception $e) {
+            $this->flashMessenger()->addErrorMessage('Skill no encontrada.');
+            return $this->redirect()->toRoute('skill');
+        }
+    }
+
     private function configureSkillColumns(Datagrid $datagrid)
     {
         // Columna ID (oculta pero necesaria para los botones de acción)

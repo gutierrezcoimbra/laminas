@@ -1,0 +1,14 @@
+<?php
+/**
+ * Partial para renderizar todos los campos del formulario de skill
+ * @var \Laminas\Form\Form $form Formulario completo
+ * @var array $errors Errores del formulario
+ */
+?>
+
+<?= $this->formElement($form->get('id')); ?>
+
+<?= $this->partial('user/partials/form-input', [
+    'element' => $form->get('nombre'),
+    'errors' => $errors ?? []
+]); ?>
